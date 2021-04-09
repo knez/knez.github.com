@@ -1,165 +1,460 @@
-<!doctype html><html lang=en-us><head><title>picoCTF 2021: Forensics | Nikola's Blog</title><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><meta name=viewport content="width=device-width,minimum-scale=1"><meta name=description content="SANS Holiday Hacking Challenge"><meta name=generator content="Hugo 0.80.0"><meta name=ROBOTS content="INDEX, FOLLOW"><link rel=stylesheet href=/css/style.css><link rel="shortcut icon" href=/images/favicon.ico type=image/x-icon><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-156479490-3','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script></head><body><nav class=navigation><a href=/><span class=arrow>←</span>Home</a>
-<a href=/posts>Archive</a>
-<a href=/tags>Tags</a>
-<a href=/about>About</a>
-<a class=button href=https://knez.github.io/index.xml>Subscribe</a></nav><main class=main><section id=single><h1 class=title>picoCTF 2021: Forensics</h1><div class=tip><span>Mar 30, 2021 22:30</span>
-<span class=split>·</span>
-<span>1970 words</span>
-<span class=split>·</span>
-<span>10 minute read</span></div><div class=content><h1 id=information>Information <a href=#information class=anchor>🔗</a></h1><p>Files can always be changed in a secret way. Can you find the flag? <em>cat.jpg</em></p><p><strong>Solution</strong></p><p>We can inspect the image metadata using the <code>exiftool</code></p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ exiftool cat.jpg
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>picoCTF 2021: Forensics | Nikola&#39;s Blog</title>
+
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
+<meta name="viewport" content="width=device-width,minimum-scale=1">
+<meta name="description" content="SANS Holiday Hacking Challenge">
+<meta name="generator" content="Hugo 0.80.0" />
+
+
+  <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
+
+
+<link rel="stylesheet" href="/css/style.css">
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+
+ 
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-156479490-3', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+
+
+  </head>
+
+  <body>
+    <nav class="navigation">
+	
+		<a href="/"> <span class="arrow">←</span>Home</a>
+	
+	<a href="/posts">Archive</a>
+	<a href="/tags">Tags</a>
+	<a href="/about">About</a>
+
+	
+
+	
+	  <a class="button" href="https://knez.github.io/index.xml">Subscribe</a>
+	
+</nav>
+
+
+    <main class="main">
+      
+
+<section id="single">
+    <h1 class="title">picoCTF 2021: Forensics</h1>
+
+    <div class="tip">
+        <span>
+          Mar 30, 2021 22:30
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          
+            1970 words
+          
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          10 minute read
+        </span>
+    </div>
+
+    <div class="content">
+      <h1 id="information">Information <a href="#information" class="anchor">🔗</a></h1><p>Files can always be changed in a secret way. Can you find the flag? <em>cat.jpg</em></p>
+<p><strong>Solution</strong></p>
+<p>We can inspect the image metadata using the <code>exiftool</code></p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ exiftool cat.jpg
 ...
 Copyright Notice                : PicoCTF
-Application Record Version      : <span style=color:#666>4</span>
+Application Record Version      : <span style="color:#666">4</span>
 XMP Toolkit                     : Image::ExifTool 10.80
 License                         : cGljb0NURnt0aGVfbTN0YWRhdGFfMXNfbW9kaWZpZWR9
 Rights                          : PicoCTF
-Image Width                     : <span style=color:#666>2560</span>
-Image Height                    : <span style=color:#666>1598</span>
-</code></pre></div><p>The <code>License</code> string appears to be base64 encoded.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ <span style=color:#a2f>echo</span> cGljb0NURnt0aGVfbTN0YWRhdGFfMXNfbW9kaWZpZWR9 | base64 -d
-</code></pre></div><p>Flag: <code>picoCTF{the_m3tadata_1s_modified}</code></p><h1 id=weird-file>Weird File <a href=#weird-file class=anchor>🔗</a></h1><p>What could go wrong if we let Word documents run programs? (aka &ldquo;in-the-clear&rdquo;)</p><p><strong>Solution</strong></p><p>The file <code>weird.docm</code> is a macro-enabled Word document.</p><p>We can analyze the embedded macros with the python tool <code>olevba</code></p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-basic data-lang=basic><span>$</span><span style=color:#bbb> </span>olevba<span style=color:#bbb> </span>weird<span style=color:#666>.</span>docm
-<span style=color:#666>...</span>
-Sub<span style=color:#bbb> </span>runpython()
-<span style=color:#bbb>  </span>Dim<span style=color:#bbb> </span>Ret_Val
-<span style=color:#bbb>  </span>Args<span style=color:#bbb> </span><span style=color:#666>=</span><span style=color:#bbb> </span><span style=color:#b44>&#34;&#34;&#34;&#34;</span><span style=color:#bbb> </span><span style=color:#080;font-style:italic>&#39;&#34;&#34;&#34;</span>
-<span style=color:#bbb>  </span>Ret_Val<span style=color:#bbb> </span><span style=color:#666>=</span><span style=color:#bbb> </span>Shell(<span style=color:#b44>&#34;python -c &#39;print(\&#34;</span>cGljb0NURnttNGNyMHNfcl9kNG5nM3IwdXN9<span style=color:#666>\</span><span style=color:#b44>&#34;)&#39;&#34;</span><span style=color:#bbb> </span><span style=color:#666>&amp;</span><span style=color:#bbb> </span><span style=color:#b44>&#34; &#34;</span><span style=color:#bbb> </span><span style=color:#666>&amp;</span><span style=color:#bbb> </span>Args,<span style=color:#bbb> </span>vbNormalFocus)
-<span style=color:#bbb>  </span>If<span style=color:#bbb> </span>Ret_Val<span style=color:#bbb> </span><span style=color:#666>=</span><span style=color:#bbb> </span><span style=color:#666>0</span><span style=color:#bbb> </span>Then
-<span style=color:#bbb>    </span>MsgBox<span style=color:#bbb> </span><span style=color:#b44>&#34;Couldn&#39;t run python script!&#34;</span>,<span style=color:#bbb> </span>vbOKOnly
-<span style=color:#bbb>  </span>End<span style=color:#bbb> </span>If
-End<span style=color:#bbb> </span>Sub
-<span style=color:#666>...</span>
-</code></pre></div><p>We see a suspicious subroutine <code>runpython()</code>. This method tries to print the string <code>cGljb0NURnttNGNyMHNfcl9kNG5nM3IwdXN9</code>.</p><p>Upon base64 decoding it, we obtain the flag</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ <span style=color:#a2f>echo</span> cGljb0NURnttNGNyMHNfcl9kNG5nM3IwdXN9 | base64 -d 
-</code></pre></div><p>Flag: <code>picoCTF{m4cr0s_r_d4ng3r0us}</code></p><h1 id=matryoshka-doll>Matryoshka doll <a href=#matryoshka-doll class=anchor>🔗</a></h1><p>Matryoshka dolls are a set of wooden dolls of decreasing size placed one inside another. What&rsquo;s the final one? Image: <em>this</em></p><p><strong>Solution</strong></p><p>The file <code>doll.jpg</code> has a mismatched extension. Magic header refers to a PNG file. Let&rsquo;s fix this.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ mv dolls.jpg dolls.png
-</code></pre></div><p>Whoa, there&rsquo;s our first matryoshka!</p><figure><img src=/images/picoctf-2021-forensics/matryoshka.jpg width=40%></figure><p>After examining the fixed image with <code>exiftool</code>, we see a strange warning:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ exiftool dolls.png
+Image Width                     : <span style="color:#666">2560</span>
+Image Height                    : <span style="color:#666">1598</span>
+</code></pre></div><p>The <code>License</code> string appears to be base64 encoded.</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ <span style="color:#a2f">echo</span> cGljb0NURnt0aGVfbTN0YWRhdGFfMXNfbW9kaWZpZWR9 | base64 -d
+</code></pre></div><p>Flag: <code>picoCTF{the_m3tadata_1s_modified}</code></p>
+<h1 id="weird-file">Weird File <a href="#weird-file" class="anchor">🔗</a></h1><p>What could go wrong if we let Word documents run programs? (aka &ldquo;in-the-clear&rdquo;)</p>
+<p><strong>Solution</strong></p>
+<p>The file <code>weird.docm</code> is a macro-enabled Word document.</p>
+<p>We can analyze the embedded macros with the python tool <code>olevba</code></p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-basic" data-lang="basic"><span style="">$</span><span style="color:#bbb"> </span>olevba<span style="color:#bbb"> </span>weird<span style="color:#666">.</span>docm
+<span style="color:#666">...</span>
+Sub<span style="color:#bbb"> </span>runpython()
+<span style="color:#bbb">  </span>Dim<span style="color:#bbb"> </span>Ret_Val
+<span style="color:#bbb">  </span>Args<span style="color:#bbb"> </span><span style="color:#666">=</span><span style="color:#bbb"> </span><span style="color:#b44">&#34;&#34;&#34;&#34;</span><span style="color:#bbb"> </span><span style="color:#080;font-style:italic">&#39;&#34;&#34;&#34;</span>
+<span style="color:#bbb">  </span>Ret_Val<span style="color:#bbb"> </span><span style="color:#666">=</span><span style="color:#bbb"> </span>Shell(<span style="color:#b44">&#34;python -c &#39;print(\&#34;</span>cGljb0NURnttNGNyMHNfcl9kNG5nM3IwdXN9<span style="color:#666">\</span><span style="color:#b44">&#34;)&#39;&#34;</span><span style="color:#bbb"> </span><span style="color:#666">&amp;</span><span style="color:#bbb"> </span><span style="color:#b44">&#34; &#34;</span><span style="color:#bbb"> </span><span style="color:#666">&amp;</span><span style="color:#bbb"> </span>Args,<span style="color:#bbb"> </span>vbNormalFocus)
+<span style="color:#bbb">  </span>If<span style="color:#bbb"> </span>Ret_Val<span style="color:#bbb"> </span><span style="color:#666">=</span><span style="color:#bbb"> </span><span style="color:#666">0</span><span style="color:#bbb"> </span>Then
+<span style="color:#bbb">    </span>MsgBox<span style="color:#bbb"> </span><span style="color:#b44">&#34;Couldn&#39;t run python script!&#34;</span>,<span style="color:#bbb"> </span>vbOKOnly
+<span style="color:#bbb">  </span>End<span style="color:#bbb"> </span>If
+End<span style="color:#bbb"> </span>Sub
+<span style="color:#666">...</span>
+</code></pre></div><p>We see a suspicious subroutine <code>runpython()</code>. This method tries to print the string <code>cGljb0NURnttNGNyMHNfcl9kNG5nM3IwdXN9</code>.</p>
+<p>Upon base64 decoding it, we obtain the flag</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ <span style="color:#a2f">echo</span> cGljb0NURnttNGNyMHNfcl9kNG5nM3IwdXN9 | base64 -d 
+</code></pre></div><p>Flag: <code>picoCTF{m4cr0s_r_d4ng3r0us}</code></p>
+<h1 id="matryoshka-doll">Matryoshka doll <a href="#matryoshka-doll" class="anchor">🔗</a></h1><p>Matryoshka dolls are a set of wooden dolls of decreasing size placed one inside another. What&rsquo;s the final one? Image: <em>this</em></p>
+<p><strong>Solution</strong></p>
+<p>The file <code>doll.jpg</code> has a mismatched extension. Magic header refers to a PNG file. Let&rsquo;s fix this.</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mv dolls.jpg dolls.png
+</code></pre></div><p>Whoa, there&rsquo;s our first matryoshka!</p>
+<figure>
+    <img src="/images/picoctf-2021-forensics/matryoshka.jpg" width="40%"/> 
+</figure>
+
+<p>After examining the fixed image with <code>exiftool</code>, we see a strange warning:</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ exiftool dolls.png
 ...
-Warning                         : <span style=color:#666>[</span>minor<span style=color:#666>]</span> Trailer data after PNG IEND chunk
+Warning                         : <span style="color:#666">[</span>minor<span style="color:#666">]</span> Trailer data after PNG IEND chunk
 Image Size                      : 594x1104
 Megapixels                      : 0.656
 </code></pre></div><p>This implies there might be hidden data appended to the image.
-Opening up the image in <code>hexedit</code> and searching for <code>IEND</code> signature reveals the start of another file. The new file begins with the magic header <code>PK</code>, which is a common signature for zip files.</p><p>We can run <code>unzip</code> on the <code>dolls.png</code>. The program will attempt to extract any zip files it finds.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ unzip dolls.png
+Opening up the image in <code>hexedit</code> and searching for <code>IEND</code> signature reveals the start of another file. The new file begins with the magic header <code>PK</code>, which is a common signature for zip files.</p>
+<p>We can run <code>unzip</code> on the <code>dolls.png</code>. The program will attempt to extract any zip files it finds.</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ unzip dolls.png
 Archive:  dolls.png
-warning <span style=color:#666>[</span>dolls.png<span style=color:#666>]</span>:  <span style=color:#666>272492</span> extra bytes at beginning or within zipfile
-  <span style=color:#666>(</span>attempting to process anyway<span style=color:#666>)</span>
+warning <span style="color:#666">[</span>dolls.png<span style="color:#666">]</span>:  <span style="color:#666">272492</span> extra bytes at beginning or within zipfile
+  <span style="color:#666">(</span>attempting to process anyway<span style="color:#666">)</span>
   inflating: base_images/2_c.jpg
-</code></pre></div><p>Bingo, we got another image (smaller matryoshka). We can repeat this process couple of times, until we get to the final flag.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ unzip base_images/2_c.jpg
+</code></pre></div><p>Bingo, we got another image (smaller matryoshka). We can repeat this process couple of times, until we get to the final flag.</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ unzip base_images/2_c.jpg
 ...
 $ unzip base_images/3_c.jpg
 ...
 $ unzip base_images/4_c.jpg
-warning <span style=color:#666>[</span>base_images/4_c.jpg<span style=color:#666>]</span>:  <span style=color:#666>79578</span> extra bytes at beginning or within zipfile
-  <span style=color:#666>(</span>attempting to process anyway<span style=color:#666>)</span>
+warning <span style="color:#666">[</span>base_images/4_c.jpg<span style="color:#666">]</span>:  <span style="color:#666">79578</span> extra bytes at beginning or within zipfile
+  <span style="color:#666">(</span>attempting to process anyway<span style="color:#666">)</span>
   inflating: flag.txt
-</code></pre></div><p>Flag: <code>picoCTF{4f11048e83ffc7d342a15bd2309b47de}</code></p><h1 id=tunn3l-v1s10n>tunn3l v1s10n <a href=#tunn3l-v1s10n class=anchor>🔗</a></h1><p>We found this <em>file</em>. Recover the flag.</p><p><strong>Solution</strong></p><p>The file itself has no extension. However, the magic header hints it might be a BMP image. BMP&rsquo;s have a magic header <code>424D</code></p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hexdump data-lang=hexdump><span>$</span> <span style=color:#666>he</span><span>xdump</span> <span>-C</span> <span>tunn3l_v1s</span><span style=color:#666>10</span><span>n</span> <span>|</span> <span style=color:#666>head</span> <span>-1</span>
-<span style=color:#a0a000>00000000</span>  <span style=color:#666>42</span> <span style=color:#666>4d</span> <span style=color:#666>8e</span> <span style=color:#666>26</span> <span style=color:#666>2c</span> <span style=color:#666>00</span> <span style=color:#666>00</span> <span style=color:#666>00</span>  <span style=color:#666>00</span> <span style=color:#666>00</span> <span style=color:#666>ba</span> <span style=color:#666>d0</span> <span style=color:#666>00</span> <span style=color:#666>00</span> <span style=color:#666>ba</span> <span style=color:#666>d0</span>  |<span style=color:#b44>BM.&amp;,...........</span>|
-</code></pre></div><p>Renaming the file to <code>tunel_vision.bmp</code> and opening it still fails. The image is probably corrupted.</p><p>If we look closely at the binary data on the first line, we can see two <em>intentionally</em> bad 4-byte values. (BAD00000 followed by BAD00000). This is an obvious clue, the header needs to be repaired.</p><p>According to BMP documentation, the first 4-byte value represents an offset to the pixel array, while the second represents BMP DIB Header Size.</p><p><p class=markdown-image><img src=/images/picoctf-2021-forensics/bmp_structure.png alt="BMP File structure" title="BMP File structure"></p></p><p>The <code>DIB Header Size</code> should be a constant, always having the same value, 40 (0x28). The pixel array is located immediately after the DIB Header chunk. So, to jump to raw pixels, we need to skip a total of 14 + 40 bytes (0x36)</p><p>After manually editing the pixel data offset to point to <code>0x36</code>, and setting BMP header size to <code>0x28</code>, the image finally opens properly. But it&rsquo;s still not enough. We got trolled</p><p><p class=markdown-image><img src=/images/picoctf-2021-forensics/troll.png alt=Trololol title=Trololol></p></p><p>Inspecting this &ldquo;corrected&rdquo; image with <code>exiftool</code> reveals one important observation.
+</code></pre></div><p>Flag: <code>picoCTF{4f11048e83ffc7d342a15bd2309b47de}</code></p>
+<h1 id="tunn3l-v1s10n">tunn3l v1s10n <a href="#tunn3l-v1s10n" class="anchor">🔗</a></h1><p>We found this <em>file</em>. Recover the flag.</p>
+<p><strong>Solution</strong></p>
+<p>The file itself has no extension. However, the magic header hints it might be a BMP image. BMP&rsquo;s have a magic header <code>424D</code></p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-hexdump" data-lang="hexdump"><span style="">$</span> <span style="color:#666">he</span><span style="">xdump</span> <span style="">-C</span> <span style="">tunn3l_v1s</span><span style="color:#666">10</span><span style="">n</span> <span style="">|</span> <span style="color:#666">head</span> <span style="">-1</span>
+<span style="color:#a0a000">00000000</span>  <span style="color:#666">42</span> <span style="color:#666">4d</span> <span style="color:#666">8e</span> <span style="color:#666">26</span> <span style="color:#666">2c</span> <span style="color:#666">00</span> <span style="color:#666">00</span> <span style="color:#666">00</span>  <span style="color:#666">00</span> <span style="color:#666">00</span> <span style="color:#666">ba</span> <span style="color:#666">d0</span> <span style="color:#666">00</span> <span style="color:#666">00</span> <span style="color:#666">ba</span> <span style="color:#666">d0</span>  |<span style="color:#b44">BM.&amp;,...........</span>|
+</code></pre></div><p>Renaming the file to <code>tunel_vision.bmp</code> and opening it still fails. The image is probably corrupted.</p>
+<p>If we look closely at the binary data on the first line, we can see two <em>intentionally</em> bad 4-byte values. (BAD00000 followed by BAD00000). This is an obvious clue, the header needs to be repaired.</p>
+<p>According to BMP documentation, the first 4-byte value represents an offset to the pixel array, while the second represents BMP DIB Header Size.</p>
+<p><p class="markdown-image">
+  <img src="/images/picoctf-2021-forensics/bmp_structure.png" alt="BMP File structure"  title="BMP File structure" />
+</p></p>
+<p>The <code>DIB Header Size</code> should be a constant, always having the same value, 40 (0x28). The pixel array is located immediately after the DIB Header chunk. So, to jump to raw pixels, we need to skip a total of 14 + 40 bytes (0x36)</p>
+<p>After manually editing the pixel data offset to point to <code>0x36</code>, and setting BMP header size to <code>0x28</code>, the image finally opens properly. But it&rsquo;s still not enough. We got trolled</p>
+<p><p class="markdown-image">
+  <img src="/images/picoctf-2021-forensics/troll.png" alt="Trololol"  title="Trololol" />
+</p></p>
+<p>Inspecting this &ldquo;corrected&rdquo; image with <code>exiftool</code> reveals one important observation.
 The total image size appears to be <strong>2893400</strong> bytes, while the image resolution is only <strong>1134x307</strong> !!
-This means we are only seeing a fragment of the image, and there&rsquo;s more to uncover.</p><p>The image width looks just about right. If we can just fix the height to its original value, we might be able to see the complete picture.</p><p>To calculate the original height in pixels, we can divide the the total image size in bytes (2893400) by the size of one row in bytes. One row can be calculated as (1134 * 3) + (1134 mod 4) bytes. The 3 stands for 3 bytes for each pixel (rgb), and 1134 mod 4 gives us the additional padding BMP format uses in order to align nicely.</p><p>Original height = 2893400 / 3404 = 850px</p><p>After setting a new height in a hexeditor, we finally get the big picture.</p><p><p class=markdown-image><img src=/images/picoctf-2021-forensics/landscape.png alt="Repaired image" title="Repaired image"></p></p><p>Alternatively, this python snippet does the same thing</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#a2f;font-weight:700>import</span> <span style=color:#00f;font-weight:700>sys</span>
-<span style=color:#a2f;font-weight:700>import</span> <span style=color:#00f;font-weight:700>struct</span>
+This means we are only seeing a fragment of the image, and there&rsquo;s more to uncover.</p>
+<p>The image width looks just about right. If we can just fix the height to its original value, we might be able to see the complete picture.</p>
+<p>To calculate the original height in pixels, we can divide the the total image size in bytes (2893400) by the size of one row in bytes. One row can be calculated as (1134 * 3) + (1134 mod 4) bytes. The 3 stands for 3 bytes for each pixel (rgb), and 1134 mod 4 gives us the additional padding BMP format uses in order to align nicely.</p>
+<p>Original height = 2893400 / 3404 = 850px</p>
+<p>After setting a new height in a hexeditor, we finally get the big picture.</p>
+<p><p class="markdown-image">
+  <img src="/images/picoctf-2021-forensics/landscape.png" alt="Repaired image"  title="Repaired image" />
+</p></p>
+<p>Alternatively, this python snippet does the same thing</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a2f;font-weight:bold">import</span> <span style="color:#00f;font-weight:bold">sys</span>
+<span style="color:#a2f;font-weight:bold">import</span> <span style="color:#00f;font-weight:bold">struct</span>
 
-<span style=color:#a2f;font-weight:700>with</span> <span style=color:#a2f>open</span>(sys<span style=color:#666>.</span>argv[<span style=color:#666>1</span>], <span style=color:#b44>&#39;rb&#39;</span>) <span style=color:#a2f;font-weight:700>as</span> f:
-	<span style=color:#a2f>buffer</span> <span style=color:#666>=</span> <span style=color:#a2f>bytearray</span>(f<span style=color:#666>.</span>read())
+<span style="color:#a2f;font-weight:bold">with</span> <span style="color:#a2f">open</span>(sys<span style="color:#666">.</span>argv[<span style="color:#666">1</span>], <span style="color:#b44">&#39;rb&#39;</span>) <span style="color:#a2f;font-weight:bold">as</span> f:
+	<span style="color:#a2f">buffer</span> <span style="color:#666">=</span> <span style="color:#a2f">bytearray</span>(f<span style="color:#666">.</span>read())
 
-st <span style=color:#666>=</span> struct<span style=color:#666>.</span>Struct(<span style=color:#b44>&#39;&lt;I&#39;</span>)
-st<span style=color:#666>.</span>pack_into(<span style=color:#a2f>buffer</span>, <span style=color:#666>0x0A</span>, <span style=color:#666>54</span>)	<span style=color:#080;font-style:italic># Fix pixel array offset</span>
-st<span style=color:#666>.</span>pack_into(<span style=color:#a2f>buffer</span>, <span style=color:#666>0x0E</span>, <span style=color:#666>40</span>)	<span style=color:#080;font-style:italic># Fix DIB Header size</span>
-st<span style=color:#666>.</span>pack_into(<span style=color:#a2f>buffer</span>, <span style=color:#666>0x16</span>, <span style=color:#666>850</span>)	<span style=color:#080;font-style:italic># Fix image Height property</span>
+st <span style="color:#666">=</span> struct<span style="color:#666">.</span>Struct(<span style="color:#b44">&#39;&lt;I&#39;</span>)
+st<span style="color:#666">.</span>pack_into(<span style="color:#a2f">buffer</span>, <span style="color:#666">0x0A</span>, <span style="color:#666">54</span>)	<span style="color:#080;font-style:italic"># Fix pixel array offset</span>
+st<span style="color:#666">.</span>pack_into(<span style="color:#a2f">buffer</span>, <span style="color:#666">0x0E</span>, <span style="color:#666">40</span>)	<span style="color:#080;font-style:italic"># Fix DIB Header size</span>
+st<span style="color:#666">.</span>pack_into(<span style="color:#a2f">buffer</span>, <span style="color:#666">0x16</span>, <span style="color:#666">850</span>)	<span style="color:#080;font-style:italic"># Fix image Height property</span>
 
-<span style=color:#a2f;font-weight:700>with</span> <span style=color:#a2f>open</span>(sys<span style=color:#666>.</span>argv[<span style=color:#666>1</span>] <span style=color:#666>+</span> <span style=color:#b44>&#34;_fixed.bmp&#34;</span>, <span style=color:#b44>&#39;wb&#39;</span>) <span style=color:#a2f;font-weight:700>as</span> f:
-	f<span style=color:#666>.</span>write(<span style=color:#a2f>buffer</span>)
+<span style="color:#a2f;font-weight:bold">with</span> <span style="color:#a2f">open</span>(sys<span style="color:#666">.</span>argv[<span style="color:#666">1</span>] <span style="color:#666">+</span> <span style="color:#b44">&#34;_fixed.bmp&#34;</span>, <span style="color:#b44">&#39;wb&#39;</span>) <span style="color:#a2f;font-weight:bold">as</span> f:
+	f<span style="color:#666">.</span>write(<span style="color:#a2f">buffer</span>)
 
-<span style=color:#a2f;font-weight:700>print</span>(<span style=color:#b44>&#39;File&#39;</span>, f<span style=color:#666>.</span>name, <span style=color:#b44>&#39;successfully created&#39;</span>)
-</code></pre></div><p>Flag: <code>picoCTF{qu1t3_a_v13w_2020}</code></p><h1 id=wireshark-doo-dooo-do-doo>Wireshark doo dooo do doo&mldr; <a href=#wireshark-doo-dooo-do-doo class=anchor>🔗</a></h1><p>Can you find the flag? <em>shark1.pcapng</em></p><p><strong>Solution</strong></p><p>After digging around for a while, I found the flag in the tcp stream 5</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ tshark -r shark1.pcapng -q -z follow,tcp,ascii,5
-HTTP/1.1 <span style=color:#666>200</span> OK
-Date: Mon, <span style=color:#666>10</span> Aug <span style=color:#666>2020</span> 01:51:45 GMT
-Server: Apache/2.4.29 <span style=color:#666>(</span>Ubuntu<span style=color:#666>)</span>
-Last-Modified: Fri, <span style=color:#666>07</span> Aug <span style=color:#666>2020</span> 00:45:02 GMT
-ETag: <span style=color:#b44>&#34;2f-5ac3eea4fcf01&#34;</span>
+<span style="color:#a2f;font-weight:bold">print</span>(<span style="color:#b44">&#39;File&#39;</span>, f<span style="color:#666">.</span>name, <span style="color:#b44">&#39;successfully created&#39;</span>)
+</code></pre></div><p>Flag: <code>picoCTF{qu1t3_a_v13w_2020}</code></p>
+<h1 id="wireshark-doo-dooo-do-doo">Wireshark doo dooo do doo&hellip; <a href="#wireshark-doo-dooo-do-doo" class="anchor">🔗</a></h1><p>Can you find the flag? <em>shark1.pcapng</em></p>
+<p><strong>Solution</strong></p>
+<p>After digging around for a while, I found the flag in the tcp stream 5</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ tshark -r shark1.pcapng -q -z follow,tcp,ascii,5
+HTTP/1.1 <span style="color:#666">200</span> OK
+Date: Mon, <span style="color:#666">10</span> Aug <span style="color:#666">2020</span> 01:51:45 GMT
+Server: Apache/2.4.29 <span style="color:#666">(</span>Ubuntu<span style="color:#666">)</span>
+Last-Modified: Fri, <span style="color:#666">07</span> Aug <span style="color:#666">2020</span> 00:45:02 GMT
+ETag: <span style="color:#b44">&#34;2f-5ac3eea4fcf01&#34;</span>
 Accept-Ranges: bytes
-Content-Length: <span style=color:#666>47</span>
-Keep-Alive: <span style=color:#b8860b>timeout</span><span style=color:#666>=</span>5, <span style=color:#b8860b>max</span><span style=color:#666>=</span><span style=color:#666>100</span>
+Content-Length: <span style="color:#666">47</span>
+Keep-Alive: <span style="color:#b8860b">timeout</span><span style="color:#666">=</span>5, <span style="color:#b8860b">max</span><span style="color:#666">=</span><span style="color:#666">100</span>
 Connection: Keep-Alive
 Content-Type: text/html
 
-Gur synt vf cvpbPGS<span style=color:#666>{</span>c33xno00_1_f33_h_qrnqorrs<span style=color:#666>}</span>
-<span style=color:#666>===================================================================</span>
-</code></pre></div><p>The flag appears to be ROT13 encoded.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ <span style=color:#a2f>echo</span> <span style=color:#b44>&#39;cvpbPGS{c33xno00_1_f33_h_qrnqorrs}&#39;</span> | rot13
-</code></pre></div><p>Flag: <code>picoCTF{p33kab00_1_s33_u_deadbeef}</code></p><h1 id=macrohard-weakedge>MacroHard WeakEdge <a href=#macrohard-weakedge class=anchor>🔗</a></h1><p>I&rsquo;ve hidden a flag in this file. Can you find it? <em>Forensics is fun.pptm</em></p><p><strong>Solution</strong></p><p>The <code>.pptm</code> files are nothing but a glorified zip files. Contents can be extracted using regular <code>unzip</code></p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ unzip <span style=color:#b44>&#39;Forensics is fun.pptm&#39;</span>
+Gur synt vf cvpbPGS<span style="color:#666">{</span>c33xno00_1_f33_h_qrnqorrs<span style="color:#666">}</span>
+<span style="color:#666">===================================================================</span>
+</code></pre></div><p>The flag appears to be ROT13 encoded.</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ <span style="color:#a2f">echo</span> <span style="color:#b44">&#39;cvpbPGS{c33xno00_1_f33_h_qrnqorrs}&#39;</span> | rot13
+</code></pre></div><p>Flag: <code>picoCTF{p33kab00_1_s33_u_deadbeef}</code></p>
+<h1 id="macrohard-weakedge">MacroHard WeakEdge <a href="#macrohard-weakedge" class="anchor">🔗</a></h1><p>I&rsquo;ve hidden a flag in this file. Can you find it? <em>Forensics is fun.pptm</em></p>
+<p><strong>Solution</strong></p>
+<p>The <code>.pptm</code> files are nothing but a glorified zip files. Contents can be extracted using regular <code>unzip</code></p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ unzip <span style="color:#b44">&#39;Forensics is fun.pptm&#39;</span>
   ...
   inflating: ppt/tableStyles.xml     
   inflating: docProps/core.xml       
   inflating: docProps/app.xml        
   inflating: ppt/slideMasters/hidden
-</code></pre></div><p>The last file looks interesting.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ cat ppt/slideMasters/hidden
-Z m x h Z z o g c G l j b <span style=color:#666>0</span> N U R n t E M W R f d V <span style=color:#666>9</span> r b j B <span style=color:#666>3</span> X <span style=color:#666>3</span> B w d H N f c l <span style=color:#666>9</span> <span style=color:#666>6</span> M X A <span style=color:#666>1</span> f Q
-</code></pre></div><p>The output is base64 encoded, separated by spaces.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>cat ppt/slideMasters/hidden | tr -d <span style=color:#b44>&#39; &#39;</span> | base64 -d
-</code></pre></div><p>Flag: <code>picoCTF{D1d_u_kn0w_ppts_r_z1p5}</code></p><h1 id=trivial-flag-transfer-protocol>Trivial Flag Transfer Protocol <a href=#trivial-flag-transfer-protocol class=anchor>🔗</a></h1><p>Figure out how they moved the <em>flag</em>.</p><p><strong>Solution</strong></p><p>After exporting all files from the pcap, we end up with:</p><ul><li>picture1.bmp</li><li>picture2.bmp</li><li>picture3.bmp</li><li>program.deb</li><li>instructions.txt</li><li>plan</li></ul><p>The flag is steganographically hidden inside the <code>picture3.bmp</code>.<br><code>program.deb</code> is really a debian package of <code>steghide</code>. Both <code>instructions.txt</code> and <code>plan</code> are ROT13 encoded text files containing instructions on how to extract the flag from the image</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ cat instructions.txt plan | rot13
+</code></pre></div><p>The last file looks interesting.</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cat ppt/slideMasters/hidden
+Z m x h Z z o g c G l j b <span style="color:#666">0</span> N U R n t E M W R f d V <span style="color:#666">9</span> r b j B <span style="color:#666">3</span> X <span style="color:#666">3</span> B w d H N f c l <span style="color:#666">9</span> <span style="color:#666">6</span> M X A <span style="color:#666">1</span> f Q
+</code></pre></div><p>The output is base64 encoded, separated by spaces.</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cat ppt/slideMasters/hidden | tr -d <span style="color:#b44">&#39; &#39;</span> | base64 -d
+</code></pre></div><p>Flag: <code>picoCTF{D1d_u_kn0w_ppts_r_z1p5}</code></p>
+<h1 id="trivial-flag-transfer-protocol">Trivial Flag Transfer Protocol <a href="#trivial-flag-transfer-protocol" class="anchor">🔗</a></h1><p>Figure out how they moved the <em>flag</em>.</p>
+<p><strong>Solution</strong></p>
+<p>After exporting all files from the pcap, we end up with:</p>
+<ul>
+<li>picture1.bmp</li>
+<li>picture2.bmp</li>
+<li>picture3.bmp</li>
+<li>program.deb</li>
+<li>instructions.txt</li>
+<li>plan</li>
+</ul>
+<p>The flag is steganographically hidden inside the <code>picture3.bmp</code>.<br>
+<code>program.deb</code> is really a debian package of <code>steghide</code>. Both <code>instructions.txt</code> and <code>plan</code> are ROT13 encoded text files containing instructions on how to extract the flag from the image</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cat instructions.txt plan | rot13
 TFTPDOESNTENCRYPTOURTRAFFICSOWEMUSTDISGUISEOURFLAGTRANSFER.FIGUREOUTAWAYTOHIDETHEFLAGANDIWILLCHECKBACKFORTHEPLAN
 IUSEDTHEPROGRAMANDHIDITWITH-DUEDILIGENCE.CHECKOUTTHEPHOTOS
-</code></pre></div><p>The password is: <strong>DUEDILIGENCE</strong></p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ steghide extract -sf picture3.bmp -p DUEDILIGENCE
-wrote extracted data to <span style=color:#b44>&#34;flag.txt&#34;</span>.
-</code></pre></div><p>Flag: <code>picoCTF{h1dd3n_1n_pLa1n_51GHT_18375919}</code></p><h1 id=wireshark-twoo-twooo-two-twoo>Wireshark twoo twooo two twoo&mldr; <a href=#wireshark-twoo-twooo-two-twoo class=anchor>🔗</a></h1><p>Can you find the flag? <em>shark2.pcapng</em></p><p><strong>Solution</strong></p><p>The flag is hidden in the suspicous dns traffic.</p><p>Looking closely we see that each DNS query has the form of xxxxxxxx.reddshrimpandherring.com, where xxxxxxxx appears to be part of a larger base64 string.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ tshark -r shark2.pcapng -T fields -e dns.qry.name dns | tail -15 | uniq
+</code></pre></div><p>The password is: <strong>DUEDILIGENCE</strong></p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ steghide extract -sf picture3.bmp -p DUEDILIGENCE
+wrote extracted data to <span style="color:#b44">&#34;flag.txt&#34;</span>.
+</code></pre></div><p>Flag: <code>picoCTF{h1dd3n_1n_pLa1n_51GHT_18375919}</code></p>
+<h1 id="wireshark-twoo-twooo-two-twoo">Wireshark twoo twooo two twoo&hellip; <a href="#wireshark-twoo-twooo-two-twoo" class="anchor">🔗</a></h1><p>Can you find the flag? <em>shark2.pcapng</em></p>
+<p><strong>Solution</strong></p>
+<p>The flag is hidden in the suspicous dns traffic.</p>
+<p>Looking closely we see that each DNS query has the form of xxxxxxxx.reddshrimpandherring.com, where xxxxxxxx appears to be part of a larger base64 string.</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ tshark -r shark2.pcapng -T fields -e dns.qry.name dns | tail -15 | uniq
 BN9PyNZN.reddshrimpandherring.com
 BN9PyNZN.reddshrimpandherring.com.us-west-1.ec2-utilities.amazonaws.com
 BN9PyNZN.reddshrimpandherring.com.windomain.local
 M9QZU6eP.reddshrimpandherring.com
 M9QZU6eP.reddshrimpandherring.com.us-west-1.ec2-utilities.amazonaws.com
 M9QZU6eP.reddshrimpandherring.com.windomain.local
-<span style=color:#b8860b>fQ</span><span style=color:#666>==</span>.reddshrimpandherring.com
-<span style=color:#b8860b>fQ</span><span style=color:#666>==</span>.reddshrimpandherring.com.us-west-1.ec2-utilities.amazonaws.com
-<span style=color:#b8860b>fQ</span><span style=color:#666>==</span>.reddshrimpandherring.com.windomain.local
-</code></pre></div><p>Furthemore, we can narrow down the communication to only this IP address: <code>18.217.1.57</code></p><p>With a little bit of terminal-fu, we can extract all fragments, reassemble them and decode the final string with this one-liner</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ tshark -r shark2.pcapng -T fields -e dns.qry.name dns and ip.dst <span style=color:#666>==</span> 18.217.1.57 <span style=color:#b62;font-weight:700>\
-</span><span style=color:#b62;font-weight:700></span>| cut -d. -f1 | uniq | tr -d <span style=color:#b44>&#39;\n&#39;</span> | base64 -d
-</code></pre></div><p>Flag: <code>picoCTF{dns_3xf1l_ftw_deadbeef}</code></p><h1 id=disk-disk-sleuth>Disk, disk, sleuth! <a href=#disk-disk-sleuth class=anchor>🔗</a></h1><p>Use <code>srch_strings</code> from the sleuthkit and some terminal-fu to find a flag in this disk image</p><p><strong>Solution</strong></p><p>The flag can be retrieved with just one grep</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>grep -a picoCTF dds1-alpine.flag.img
-</code></pre></div><p>Flag: <code>picoCTF{f0r3ns1c4t0r_n30phyt3_a6f4cab5}</code></p><h1 id=disk-disk-sleuth-ii>Disk, disk, sleuth! II <a href=#disk-disk-sleuth-ii class=anchor>🔗</a></h1><p>All we know is the file with the flag is named <em>down-at-the-bottom.txt</em>&mldr; Disk image: <em>dds2-alpine.flag.img.gz</em></p><p><strong>Solution</strong></p><p>First, let&rsquo;s inspect the disk layout. We can use <code>fdisk</code> or sleuth&rsquo;s kit <code>mmls</code> command.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ mmls dds2-alpine.flag.img
+<span style="color:#b8860b">fQ</span><span style="color:#666">==</span>.reddshrimpandherring.com
+<span style="color:#b8860b">fQ</span><span style="color:#666">==</span>.reddshrimpandherring.com.us-west-1.ec2-utilities.amazonaws.com
+<span style="color:#b8860b">fQ</span><span style="color:#666">==</span>.reddshrimpandherring.com.windomain.local
+</code></pre></div><p>Furthemore, we can narrow down the communication to only this IP address: <code>18.217.1.57</code></p>
+<p>With a little bit of terminal-fu, we can extract all fragments, reassemble them and decode the final string with this one-liner</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ tshark -r shark2.pcapng -T fields -e dns.qry.name dns and ip.dst <span style="color:#666">==</span> 18.217.1.57 <span style="color:#b62;font-weight:bold">\
+</span><span style="color:#b62;font-weight:bold"></span>| cut -d. -f1 | uniq | tr -d <span style="color:#b44">&#39;\n&#39;</span> | base64 -d
+</code></pre></div><p>Flag: <code>picoCTF{dns_3xf1l_ftw_deadbeef}</code></p>
+<h1 id="disk-disk-sleuth">Disk, disk, sleuth! <a href="#disk-disk-sleuth" class="anchor">🔗</a></h1><p>Use <code>srch_strings</code> from the sleuthkit and some terminal-fu to find a flag in this disk image</p>
+<p><strong>Solution</strong></p>
+<p>The flag can be retrieved with just one grep</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">grep -a picoCTF dds1-alpine.flag.img
+</code></pre></div><p>Flag: <code>picoCTF{f0r3ns1c4t0r_n30phyt3_a6f4cab5}</code></p>
+<h1 id="disk-disk-sleuth-ii">Disk, disk, sleuth! II <a href="#disk-disk-sleuth-ii" class="anchor">🔗</a></h1><p>All we know is the file with the flag is named <em>down-at-the-bottom.txt</em>&hellip; Disk image: <em>dds2-alpine.flag.img.gz</em></p>
+<p><strong>Solution</strong></p>
+<p>First, let&rsquo;s inspect the disk layout. We can use <code>fdisk</code> or sleuth&rsquo;s kit <code>mmls</code> command.</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mmls dds2-alpine.flag.img
 DOS Partition Table
-Offset Sector: <span style=color:#666>0</span>
+Offset Sector: <span style="color:#666">0</span>
 Units are in 512-byte sectors
 
       Slot      Start        End          Length       Description
-000:  Meta      <span style=color:#666>0000000000</span>   <span style=color:#666>0000000000</span>   <span style=color:#666>0000000001</span>   Primary Table <span style=color:#666>(</span><span style=color:#080;font-style:italic>#0)</span>
-001:  -------   <span style=color:#666>0000000000</span>   <span style=color:#666>0000002047</span>   <span style=color:#666>0000002048</span>   Unallocated
-002:  000:000   <span style=color:#666>0000002048</span>   <span style=color:#666>0000262143</span>   <span style=color:#666>0000260096</span>   Linux <span style=color:#666>(</span>0x83<span style=color:#666>)</span>
-</code></pre></div><p>We can clearly see, that the linux partition starts at the sector offset 2048.</p><p>Knowing that, let&rsquo;s use the <code>fls</code> utility to recursively list files starting from offset 2048. We can narrow down the results by grepping just for our file.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ fls -o <span style=color:#666>2048</span> -rF dds2-alpine.flag.img | grep down-at-the-bottom.txt
+000:  Meta      <span style="color:#666">0000000000</span>   <span style="color:#666">0000000000</span>   <span style="color:#666">0000000001</span>   Primary Table <span style="color:#666">(</span><span style="color:#080;font-style:italic">#0)</span>
+001:  -------   <span style="color:#666">0000000000</span>   <span style="color:#666">0000002047</span>   <span style="color:#666">0000002048</span>   Unallocated
+002:  000:000   <span style="color:#666">0000002048</span>   <span style="color:#666">0000262143</span>   <span style="color:#666">0000260096</span>   Linux <span style="color:#666">(</span>0x83<span style="color:#666">)</span>
+</code></pre></div><p>We can clearly see, that the linux partition starts at the sector offset 2048.</p>
+<p>Knowing that, let&rsquo;s use the <code>fls</code> utility to recursively list files starting from offset 2048. We can narrow down the results by grepping just for our file.</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ fls -o <span style="color:#666">2048</span> -rF dds2-alpine.flag.img | grep down-at-the-bottom.txt
 r/r 18291:	root/down-at-the-bottom.txt
-</code></pre></div><p>This will return the full path and the inode of the file.</p><p>Finally, using <code>icat</code> and passing it the inode above will print out the file contents.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ icat -o <span style=color:#666>2048</span> dds2-alpine.flag.img <span style=color:#666>18291</span>
-</code></pre></div><p>Flag: <code>picoCTF{f0r3ns1c4t0r_n0v1c3_f5565e7b}</code></p><h1 id=surfing-the-waves>Surfing the Waves <a href=#surfing-the-waves class=anchor>🔗</a></h1><p>While you&rsquo;re going through the FBI&rsquo;s servers, you stumble across their incredible taste in music. One <em>main.wav</em> you found is particularly interesting, see if you can find the flag!</p><p><strong>Solution</strong></p><p>The <code>main.wav</code> contains 16-bit LE values representing amplitudes. We need to transform each 16bit number to a 4bit number, and assemble them together to get any meaningful data.</p><p>Transformation is done by first subtracting 1000 from the amplitude, then dividing by 500 while discarding the remainder.</p><p><strong>Example:</strong></p><p>First amplitude has a value of 2000. So (2000 - 1000) / 500 = 2<br>Second amplitude has a value of 2501. (2501 - 1000) / 500 = 3</p><p>The first output byte is then <code>0x23</code>, which is <code>#</code> in ASCII.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#a2f;font-weight:700>from</span> <span style=color:#00f;font-weight:700>scipy.io</span> <span style=color:#a2f;font-weight:700>import</span> wavfile
+</code></pre></div><p>This will return the full path and the inode of the file.</p>
+<p>Finally, using <code>icat</code> and passing it the inode above will print out the file contents.</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ icat -o <span style="color:#666">2048</span> dds2-alpine.flag.img <span style="color:#666">18291</span>
+</code></pre></div><p>Flag: <code>picoCTF{f0r3ns1c4t0r_n0v1c3_f5565e7b}</code></p>
+<h1 id="surfing-the-waves">Surfing the Waves <a href="#surfing-the-waves" class="anchor">🔗</a></h1><p>While you&rsquo;re going through the FBI&rsquo;s servers, you stumble across their incredible taste in music. One <em>main.wav</em> you found is particularly interesting, see if you can find the flag!</p>
+<p><strong>Solution</strong></p>
+<p>The <code>main.wav</code> contains 16-bit LE values representing amplitudes. We need to transform each 16bit number to a 4bit number, and assemble them together to get any meaningful data.</p>
+<p>Transformation is done by first subtracting 1000 from the amplitude, then dividing by 500 while discarding the remainder.</p>
+<p><strong>Example:</strong></p>
+<p>First amplitude has a value of 2000. So (2000 - 1000) / 500 = 2<br>
+Second amplitude has a value of 2501. (2501 - 1000) / 500 = 3</p>
+<p>The first output byte is then <code>0x23</code>, which is <code>#</code> in ASCII.</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a2f;font-weight:bold">from</span> <span style="color:#00f;font-weight:bold">scipy.io</span> <span style="color:#a2f;font-weight:bold">import</span> wavfile
 
-samplerate, data <span style=color:#666>=</span> wavfile<span style=color:#666>.</span>read(<span style=color:#b44>&#39;main.wav&#39;</span>)
+samplerate, data <span style="color:#666">=</span> wavfile<span style="color:#666">.</span>read(<span style="color:#b44">&#39;main.wav&#39;</span>)
 
-hexed <span style=color:#666>=</span> []
-<span style=color:#a2f;font-weight:700>for</span> i <span style=color:#a2f;font-weight:700>in</span> data:
-    r <span style=color:#666>=</span> (i <span style=color:#666>-</span> <span style=color:#666>1000</span>) <span style=color:#666>//</span> <span style=color:#666>500</span>
-    hexed<span style=color:#666>.</span>append(<span style=color:#a2f>hex</span>(r)[<span style=color:#666>2</span>:])
+hexed <span style="color:#666">=</span> []
+<span style="color:#a2f;font-weight:bold">for</span> i <span style="color:#a2f;font-weight:bold">in</span> data:
+    r <span style="color:#666">=</span> (i <span style="color:#666">-</span> <span style="color:#666">1000</span>) <span style="color:#666">//</span> <span style="color:#666">500</span>
+    hexed<span style="color:#666">.</span>append(<span style="color:#a2f">hex</span>(r)[<span style="color:#666">2</span>:])
 
-<span style=color:#a2f;font-weight:700>print</span>(<span style=color:#a2f>bytearray</span><span style=color:#666>.</span>fromhex(<span style=color:#b44>&#39;&#39;</span><span style=color:#666>.</span>join(hexed))<span style=color:#666>.</span>decode())
-</code></pre></div><p>The output is a python script used to generate the original wav file. Flag is located at the bottom.</p><p>Flag: <code>picoCTF{mU21C_1s_1337_6e0a8181}</code></p><h1 id=milkslap>Milkslap <a href=#milkslap class=anchor>🔗</a></h1><p>🥛👋</p><p><strong>Solution</strong></p><p>The flag is steganographically stored inside the image <code>concat_v.png</code>. Extracting 1 least significant bit from each pixel&rsquo;s blue channel yields the correct flag</p><p>We can use the <code>zsteg</code> tool to automate this process</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ zsteg b1,b,lsb,xy concat_v.png
-imagedata           .. text: <span style=color:#b44>&#34;\n\n\n\n\n\n\t\t&#34;</span>
-b1,b,lsb,xy         .. text: <span style=color:#b44>&#34;picoCTF{imag3_m4n1pul4t10n_sl4p5}\n&#34;</span>
-</code></pre></div><p>Flag: <code>picoCTF{imag3_m4n1pul4t10n_sl4p5}</code></p><h1 id=very-very-very-hidden>Very very very Hidden <a href=#very-very-very-hidden class=anchor>🔗</a></h1><p>Finding a flag may take many steps, but if you look diligently it won&rsquo;t be long until you find the light at the end of the tunnel. Just remember, sometimes you find the hidden treasure, but sometimes you find only a hidden map to the treasure. <em>try_me.pcap</em></p><p><strong>Solution</strong></p><p>In the pcap files, we can see a few <em>suspicious</em> GET requests.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>GET /NothingSus/duck.png HTTP/1.1
-</code></pre></div><p>and</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>GET /NothingSus/evil_duck.png HTTP/1.1
-</code></pre></div><p>Here are both images exported using <code>tshark</code></p><p><p class=markdown-image><img src=/images/picoctf-2021-forensics/duck.png alt="Legit duck" title="Legit duck"></p></p><p><p class=markdown-image><img src=/images/picoctf-2021-forensics/evil_duck.png alt="Evil duck" title="Evil duck"></p></p><p>The second image clearly contains some stego data, as it is visibly distorted. However, all known steganography methods fail when attempting to extract the payload.</p><p>Getting back to our pcap file and applying a <code>dns</code> filter, we can see some interesting pointers.<br>The attacker first visited url <code>raw.github.com</code>, followed by <code>powershell.org</code>. This implies attacker was probably browsing some code on github. The second url suggests he was interested in powershell.</p><p>Putting the two and two togeter, we try to search the github for any stego tools written in powershell. Luckily, the first tool with the most stars is the right one: <code>Invoke-PSImage.ps1</code></p><p><p class=markdown-image><img src=/images/picoctf-2021-forensics/psinvoke.png alt=Invoke-PSImage.ps1 title=Invoke-PSImage.ps1></p></p><p>This tool will embed any payload inside png images using the 4 least significant bits from the blue and green channels (in that order). After embedding, it provides a one-liner to execute the payload.</p><p>I modified the one-liner to only display the extracted payload (instead of executing it)</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#a2f>sal </span>a <span style=color:#a2f>New-Object</span>; <span style=color:#a2f>Add-Type</span> -A System.Drawing;
-<span style=color:#b8860b>$g</span>=a System.Drawing.Bitmap(<span style=color:#b44>&#34;C:\Users\nikola\Downloads\Invoke-PSImage\evil_duck.png&#34;</span>);
-<span style=color:#b8860b>$o</span>=a Byte[] 1223;
-(0..0) | % {<span style=color:#a2f;font-weight:700>foreach</span>(<span style=color:#b8860b>$x</span> <span style=color:#a2f;font-weight:700>in</span>(0..1222)) {
-	<span style=color:#b8860b>$p</span>=<span style=color:#b8860b>$g</span>.GetPixel(<span style=color:#b8860b>$x</span>,<span style=color:#b8860b>$_</span>);
-	<span style=color:#b8860b>$o</span>[<span style=color:#b8860b>$_</span>*1223+<span style=color:#b8860b>$x</span>]=(<span style=color:#800>[math]</span>::Floor((<span style=color:#b8860b>$p</span>.B-band15)*16)<span style=color:#666>-bor</span>(<span style=color:#b8860b>$p</span>.G-band15))
+<span style="color:#a2f;font-weight:bold">print</span>(<span style="color:#a2f">bytearray</span><span style="color:#666">.</span>fromhex(<span style="color:#b44">&#39;&#39;</span><span style="color:#666">.</span>join(hexed))<span style="color:#666">.</span>decode())
+</code></pre></div><p>The output is a python script used to generate the original wav file. Flag is located at the bottom.</p>
+<p>Flag: <code>picoCTF{mU21C_1s_1337_6e0a8181}</code></p>
+<h1 id="milkslap">Milkslap <a href="#milkslap" class="anchor">🔗</a></h1><p>🥛👋</p>
+<p><strong>Solution</strong></p>
+<p>The flag is steganographically stored inside the image <code>concat_v.png</code>. Extracting 1 least significant bit from each pixel&rsquo;s blue channel yields the correct flag</p>
+<p>We can use the <code>zsteg</code> tool to automate this process</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ zsteg b1,b,lsb,xy concat_v.png
+imagedata           .. text: <span style="color:#b44">&#34;\n\n\n\n\n\n\t\t&#34;</span>
+b1,b,lsb,xy         .. text: <span style="color:#b44">&#34;picoCTF{imag3_m4n1pul4t10n_sl4p5}\n&#34;</span>
+</code></pre></div><p>Flag: <code>picoCTF{imag3_m4n1pul4t10n_sl4p5}</code></p>
+<h1 id="very-very-very-hidden">Very very very Hidden <a href="#very-very-very-hidden" class="anchor">🔗</a></h1><p>Finding a flag may take many steps, but if you look diligently it won&rsquo;t be long until you find the light at the end of the tunnel. Just remember, sometimes you find the hidden treasure, but sometimes you find only a hidden map to the treasure. <em>try_me.pcap</em></p>
+<p><strong>Solution</strong></p>
+<p>In the pcap files, we can see a few <em>suspicious</em> GET requests.</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">GET /NothingSus/duck.png HTTP/1.1
+</code></pre></div><p>and</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">GET /NothingSus/evil_duck.png HTTP/1.1
+</code></pre></div><p>Here are both images exported using <code>tshark</code></p>
+<p><p class="markdown-image">
+  <img src="/images/picoctf-2021-forensics/duck.png" alt="Legit duck"  title="Legit duck" />
+</p></p>
+<p><p class="markdown-image">
+  <img src="/images/picoctf-2021-forensics/evil_duck.png" alt="Evil duck"  title="Evil duck" />
+</p></p>
+<p>The second image clearly contains some stego data, as it is visibly distorted. However, all known steganography methods fail when attempting to extract the payload.</p>
+<p>Getting back to our pcap file and applying a <code>dns</code> filter, we can see some interesting pointers.<br>
+The attacker first visited url <code>raw.github.com</code>, followed by <code>powershell.org</code>. This implies attacker was probably browsing some code on github. The second url suggests he was interested in powershell.</p>
+<p>Putting the two and two togeter, we try to search the github for any stego tools written in powershell. Luckily, the first tool with the most stars is the right one: <code>Invoke-PSImage.ps1</code></p>
+<p><p class="markdown-image">
+  <img src="/images/picoctf-2021-forensics/psinvoke.png" alt="Invoke-PSImage.ps1"  title="Invoke-PSImage.ps1" />
+</p></p>
+<p>This tool will embed any payload inside png images using the 4 least significant bits from the blue and green channels (in that order). After embedding, it provides a one-liner to execute the payload.</p>
+<p>I modified the one-liner to only display the extracted payload (instead of executing it)</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="color:#a2f">sal </span>a <span style="color:#a2f">New-Object</span>; <span style="color:#a2f">Add-Type</span> -A System.Drawing;
+<span style="color:#b8860b">$g</span>=a System.Drawing.Bitmap(<span style="color:#b44">&#34;C:\Users\nikola\Downloads\Invoke-PSImage\evil_duck.png&#34;</span>);
+<span style="color:#b8860b">$o</span>=a Byte[] 1223;
+(0..0) | % {<span style="color:#a2f;font-weight:bold">foreach</span>(<span style="color:#b8860b">$x</span> <span style="color:#a2f;font-weight:bold">in</span>(0..1222)) {
+	<span style="color:#b8860b">$p</span>=<span style="color:#b8860b">$g</span>.GetPixel(<span style="color:#b8860b">$x</span>,<span style="color:#b8860b">$_</span>);
+	<span style="color:#b8860b">$o</span>[<span style="color:#b8860b">$_</span>*1223+<span style="color:#b8860b">$x</span>]=(<span style="color:#800">[math]</span>::Floor((<span style="color:#b8860b">$p</span>.B-band15)*16)<span style="color:#666">-bor</span>(<span style="color:#b8860b">$p</span>.G-band15))
 }};
-<span style=color:#b8860b>$g</span>.Dispose();
-<span style=color:#800>[System.Text.Encoding]</span>::ASCII.GetString(<span style=color:#b8860b>$o</span>[0..394])
-</code></pre></div><p><strong>NOTE</strong>: You have to temporary disable Defender for it to run.</p><p>The above code will extract yet another powershell script from the image.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#b8860b>$out</span> = <span style=color:#b44>&#34;flag.txt&#34;</span>
-<span style=color:#b8860b>$enc</span> = <span style=color:#800>[system.Text.Encoding]</span>::UTF8
-<span style=color:#b8860b>$string1</span> = <span style=color:#b44>&#34;HEYWherE(IS_tNE)50uP?^DId_YOu(]E@t*mY_3RD()B2g3l?&#34;</span>
-<span style=color:#b8860b>$string2</span> = <span style=color:#b44>&#34;8,:8+14&gt;Fx0l+$*KjVD&gt;[o*.;+1|*[n&amp;2G^201l&amp;,Mv+_&#39;T_B&#34;</span>
+<span style="color:#b8860b">$g</span>.Dispose();
+<span style="color:#800">[System.Text.Encoding]</span>::ASCII.GetString(<span style="color:#b8860b">$o</span>[0..394])
+</code></pre></div><p><strong>NOTE</strong>: You have to temporary disable Defender for it to run.</p>
+<p>The above code will extract yet another powershell script from the image.</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="color:#b8860b">$out</span> = <span style="color:#b44">&#34;flag.txt&#34;</span>
+<span style="color:#b8860b">$enc</span> = <span style="color:#800">[system.Text.Encoding]</span>::UTF8
+<span style="color:#b8860b">$string1</span> = <span style="color:#b44">&#34;HEYWherE(IS_tNE)50uP?^DId_YOu(]E@t*mY_3RD()B2g3l?&#34;</span>
+<span style="color:#b8860b">$string2</span> = <span style="color:#b44">&#34;8,:8+14&gt;Fx0l+$*KjVD&gt;[o*.;+1|*[n&amp;2G^201l&amp;,Mv+_&#39;T_B&#34;</span>
 
-<span style=color:#b8860b>$data1</span> = <span style=color:#b8860b>$enc</span>.GetBytes(<span style=color:#b8860b>$string1</span>)
-<span style=color:#b8860b>$bytes</span> = <span style=color:#b8860b>$enc</span>.GetBytes(<span style=color:#b8860b>$string2</span>)
+<span style="color:#b8860b">$data1</span> = <span style="color:#b8860b">$enc</span>.GetBytes(<span style="color:#b8860b">$string1</span>)
+<span style="color:#b8860b">$bytes</span> = <span style="color:#b8860b">$enc</span>.GetBytes(<span style="color:#b8860b">$string2</span>)
 
-<span style=color:#a2f;font-weight:700>for</span>(<span style=color:#b8860b>$i</span>=0; <span style=color:#b8860b>$i</span> <span style=color:#666>-lt</span> <span style=color:#b8860b>$bytes</span>.count ; <span style=color:#b8860b>$i</span>++)
+<span style="color:#a2f;font-weight:bold">for</span>(<span style="color:#b8860b">$i</span>=0; <span style="color:#b8860b">$i</span> <span style="color:#666">-lt</span> <span style="color:#b8860b">$bytes</span>.count ; <span style="color:#b8860b">$i</span>++)
 {
-    <span style=color:#b8860b>$bytes</span>[<span style=color:#b8860b>$i</span>] = <span style=color:#b8860b>$bytes</span>[<span style=color:#b8860b>$i</span>] <span style=color:#666>-bxor</span> <span style=color:#b8860b>$data1</span>[<span style=color:#b8860b>$i</span>]
+    <span style="color:#b8860b">$bytes</span>[<span style="color:#b8860b">$i</span>] = <span style="color:#b8860b">$bytes</span>[<span style="color:#b8860b">$i</span>] <span style="color:#666">-bxor</span> <span style="color:#b8860b">$data1</span>[<span style="color:#b8860b">$i</span>]
 }
-<span style=color:#800>[System.IO.File]</span>::WriteAllBytes(<span style=color:#b44>&#34;$out&#34;</span>, <span style=color:#b8860b>$bytes</span>)
-</code></pre></div><p>This new script simply xor&rsquo;s two strings together and stores the final result into <code>flag.txt</code></p><p>Flag: <code>picoCTF{n1c3_job_f1nd1ng_th3_s3cr3t_in_the_im@g3}</code></p></div><div class=tags><a href=https://knez.github.io/tags/picoctf>picoctf</a>
-<a href=https://knez.github.io/tags/forensics>forensics</a></div><div id=comment><div id=disqus_thread></div><script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return;}
-var d=document,s=d.createElement('script');s.async=true;s.src='//'+"hackerfiles"+'.disqus.com/embed.js';s.setAttribute('data-timestamp',+new Date());(d.head||d.body).appendChild(s);})();</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></div></section></main><footer id=footer><div id=social><a class=symbol href=https://github.com/knez target=_blank><svg fill="#bbb" width="28" height="28" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><title>Github</title><desc>Created with Sketch.</desc><defs/><g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)"><g id="Github" transform="translate(264.000000, 939.000000)"><path d="M8 72H64C68.418278 72 72 68.418278 72 64V8c0-4.418278-3.581721999999999-8-8-8H8c-4.418278 811624501e-24-8 3.581722-8 8V64C541083001e-24 68.418278 3.581722 72 8 72z" id="Rounded" fill="#bbb"/><path d="M35.9985 13C22.746 13 12 23.7870921 12 37.096644 12 47.7406712 18.876 56.7718301 28.4145 59.9584121 29.6145 60.1797862 30.0525 59.4358488 30.0525 58.7973276 30.0525 58.2250681 30.0315 56.7100863 30.0195 54.6996482 23.343 56.1558981 21.9345 51.4693938 21.9345 51.4693938 20.844 48.6864054 19.2705 47.9454799 19.2705 47.9454799 17.091 46.4500754 19.4355 46.4801943 19.4355 46.4801943 21.843 46.6503662 23.1105 48.9634994 23.1105 48.9634994 25.2525 52.6455377 28.728 51.5823398 30.096 50.9649018 30.3135 49.4077535 30.9345 48.3460615 31.62 47.7436831 26.2905 47.1352808 20.688 45.0691228 20.688 35.8361671 20.688 33.2052792 21.6225 31.0547881 23.1585 29.3696344 22.911 28.7597262 22.0875 26.3110578 23.3925 22.9934585 23.3925 22.9934585 25.4085 22.3459017 29.9925 25.4632101 31.908 24.9285993 33.96 24.6620468 36.0015 24.6515052 38.04 24.6620468 40.0935 24.9285993 42.0105 25.4632101 46.5915 22.3459017 48.603 22.9934585 48.603 22.9934585 49.9125 26.3110578 49.089 28.7597262 48.8415 29.3696344 50.3805 31.0547881 51.309 33.2052792 51.309 35.8361671 51.309 45.0917119 45.6975 47.1292571 40.3515 47.7256117 41.2125 48.4695491 41.9805 49.9393525 41.9805 52.1877301 41.9805 55.4089489 41.9505 58.0067059 41.9505 58.7973276 41.9505 59.4418726 42.3825 60.1918338 43.6005 59.9554002 53.13 56.7627944 60 47.7376593 60 37.096644 60 23.7870921 49.254 13 35.9985 13" fill="#fff"/></g></g></g></svg></a></div><p class=copyright>© Copyright
-2021
-<span class=split><svg fill="#bbb" width="15" height="15" id="heart-15" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15"><path d="M13.91 6.75c-1.17 2.25-4.3 5.31-6.07 6.94-.1903.1718-.4797.1718-.67.0C5.39 12.06 2.26 9 1.09 6.75-1.48 1.8 5-1.5 7.5 3.45 10-1.5 16.48 1.8 13.91 6.75z"/></svg></span>Nikola Knežević</p><p class=powerby>Powered by <a href=http://www.gohugo.io/>Hugo</a> Theme By <a href=https://github.com/nodejh/hugo-theme-cactus-plus>nodejh</a></p></footer></body></html>
+<span style="color:#800">[System.IO.File]</span>::WriteAllBytes(<span style="color:#b44">&#34;$out&#34;</span>, <span style="color:#b8860b">$bytes</span>)
+</code></pre></div><p>This new script simply xor&rsquo;s two strings together and stores the final result into <code>flag.txt</code></p>
+<p>Flag: <code>picoCTF{n1c3_job_f1nd1ng_th3_s3cr3t_in_the_im@g3}</code></p>
+
+    </div>
+
+    
+        <div class="tags">
+            
+                <a href="https://knez.github.io/tags/picoctf">picoctf</a>
+            
+                <a href="https://knez.github.io/tags/forensics">forensics</a>
+            
+        </div>
+    
+    
+     
+  <div id="comment">
+    
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hackerfiles" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+  </div>
+
+
+</section>
+
+
+    </main>
+    
+    <footer id="footer">
+    
+        <div id="social">
+
+
+    <a class="symbol" href="https://github.com/knez" target="_blank">
+        
+        <svg fill="#bbbbbb" width="28" height="28"  viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <title>Github</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)">
+            <g id="Github" transform="translate(264.000000, 939.000000)">
+                <path d="M8,72 L64,72 C68.418278,72 72,68.418278 72,64 L72,8 C72,3.581722 68.418278,-8.11624501e-16 64,0 L8,0 C3.581722,8.11624501e-16 -5.41083001e-16,3.581722 0,8 L0,64 C5.41083001e-16,68.418278 3.581722,72 8,72 Z" id="Rounded" fill="#bbbbbb"></path>
+                <path d="M35.9985,13 C22.746,13 12,23.7870921 12,37.096644 C12,47.7406712 18.876,56.7718301 28.4145,59.9584121 C29.6145,60.1797862 30.0525,59.4358488 30.0525,58.7973276 C30.0525,58.2250681 30.0315,56.7100863 30.0195,54.6996482 C23.343,56.1558981 21.9345,51.4693938 21.9345,51.4693938 C20.844,48.6864054 19.2705,47.9454799 19.2705,47.9454799 C17.091,46.4500754 19.4355,46.4801943 19.4355,46.4801943 C21.843,46.6503662 23.1105,48.9634994 23.1105,48.9634994 C25.2525,52.6455377 28.728,51.5823398 30.096,50.9649018 C30.3135,49.4077535 30.9345,48.3460615 31.62,47.7436831 C26.2905,47.1352808 20.688,45.0691228 20.688,35.8361671 C20.688,33.2052792 21.6225,31.0547881 23.1585,29.3696344 C22.911,28.7597262 22.0875,26.3110578 23.3925,22.9934585 C23.3925,22.9934585 25.4085,22.3459017 29.9925,25.4632101 C31.908,24.9285993 33.96,24.6620468 36.0015,24.6515052 C38.04,24.6620468 40.0935,24.9285993 42.0105,25.4632101 C46.5915,22.3459017 48.603,22.9934585 48.603,22.9934585 C49.9125,26.3110578 49.089,28.7597262 48.8415,29.3696344 C50.3805,31.0547881 51.309,33.2052792 51.309,35.8361671 C51.309,45.0917119 45.6975,47.1292571 40.3515,47.7256117 C41.2125,48.4695491 41.9805,49.9393525 41.9805,52.1877301 C41.9805,55.4089489 41.9505,58.0067059 41.9505,58.7973276 C41.9505,59.4418726 42.3825,60.1918338 43.6005,59.9554002 C53.13,56.7627944 60,47.7376593 60,37.096644 C60,23.7870921 49.254,13 35.9985,13" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>
+    </a>
+
+
+</div>
+
+    
+
+    <p class="copyright">
+    
+       © Copyright 
+       2021 
+       <span class="split">
+        <svg fill="#bbbbbb" width="15" height="15" version="1.1" id="heart-15" xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 15 15">
+  <path d="M13.91,6.75c-1.17,2.25-4.3,5.31-6.07,6.94c-0.1903,0.1718-0.4797,0.1718-0.67,0C5.39,12.06,2.26,9,1.09,6.75&#xA;&#x9;C-1.48,1.8,5-1.5,7.5,3.45C10-1.5,16.48,1.8,13.91,6.75z"/>
+</svg>
+       </span>
+       Nikola Knežević
+    
+    </p>
+    <p class="powerby">
+        Powered by <a href="http://www.gohugo.io/">Hugo</a> Theme By <a href="https://github.com/nodejh/hugo-theme-cactus-plus">nodejh</a>
+    </p>
+</footer>
+
+  </body>
+</html>
