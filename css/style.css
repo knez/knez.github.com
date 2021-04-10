@@ -72,6 +72,10 @@ tr:nth-child(odd)>td {
   background: #fcfcfc;
 }
 
+h1 {
+  font-size: 26px;
+}
+
 h1,
 h2,
 h3 {
