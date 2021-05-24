@@ -123,6 +123,11 @@ p code {
   word-wrap: break-word;
   text-indent: 0;
 }
+
+p {
+  word-wrap: break-word;
+}
+
 pre code {
   font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, Courier, monospace;
 }
