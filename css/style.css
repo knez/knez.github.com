@@ -89,6 +89,7 @@ p {
 pre {
   line-break: anywhere;
   word-break: break-all;
+  overflow-x: auto;
 }
 .markdown-image img {
   max-width: 100%;
@@ -450,6 +451,9 @@ nav.navigation a.button {
   #tags .tag {
     display: inline-block;
     margin: 4px 5px;
+  }
+  #archive .group .value .tags {
+    display: none;
   }
 }
 
